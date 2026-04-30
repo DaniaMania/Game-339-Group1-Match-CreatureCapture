@@ -5,23 +5,21 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance;
-    
-    [SerializeField] private string _playerCharacter;
-    [SerializeField] private string _enemyCharacter;
-    [SerializeField] private int _healAmount = 2;
-    
+
+    [SerializeField] private PlayerData _playerData;
+
     private Character _player;
     private Character _enemy;
     private AttackService _attackService;
     private TurnEngine _turnEngine;
-    
-    private int _defaultHealAmount;
-    
+
+    private int _currentHealAmount;
+
     public event Action<int> PlayerTakeDamage;
     public event Action<int> EnemyTakeDamage;
     public event Action PlayerHeal;
     public event Action EnemyHeal;
-    
+
     private void Awake()
     {
         if (Instance == null)
@@ -33,24 +31,22 @@ public class PlayerController : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
-        _player = ServiceResolver.Resolve<CharacterManager>().Get(_playerCharacter);
-        _enemy = ServiceResolver.Resolve<CharacterManager>().Get(_enemyCharacter);
+
+        _player = ServiceResolver.Resolve<CharacterManager>().Get(_playerData.PlayerCharacter);
+        _enemy = ServiceResolver.Resolve<CharacterManager>().Get(_playerData.EnemyCharacter);
         _attackService = ServiceResolver.Resolve<AttackService>();
         _turnEngine = ServiceResolver.Resolve<TurnEngine>();
-        
+
         _player.ResetValues();
         _enemy.ResetValues();
-        
-        _defaultHealAmount = _healAmount;
+
+        _currentHealAmount = _playerData.HealAmount;
     }
 
     private void Start()
     {
-        _turnEngine.EnterEncounter(); //change this later
-        
-        //TODO -- pick who goes first
-        _turnEngine.StartPlayerTurn(); //debug player goes first
+        _turnEngine.EnterEncounter();
+        _turnEngine.StartPlayerTurn();
     }
 
     //===== Character Abilities =====
@@ -63,7 +59,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Attack(_enemy, _player)) _turnEngine.StartPlayerTurn();
     }
-    
+
     private bool Attack(Character attacker, Character target)
     {
         bool isTargetDead = _attackService.Attack(attacker, target);
@@ -77,20 +73,19 @@ public class PlayerController : MonoBehaviour
 
     public void Heal()
     {
-        int healed = _player.HP.Value + _healAmount;
-        if (healed > _player.MaxHP.Value) healed = _player.MaxHP.Value;
+        int healed = Mathf.Min(_player.HP.Value + _currentHealAmount, _player.MaxHP.Value);
         _player.HP.Value = healed;
         _turnEngine.EndPlayerTurn();
     }
-    
+
     //===== Upgrades =====
     public void UpgradeHealPotency(int amount)
     {
-        _healAmount += amount;
+        _currentHealAmount += amount;
     }
-    
+
     public void ResetHealPotency()
     {
-        _healAmount = _defaultHealAmount;
+        _currentHealAmount = _playerData.HealAmount;
     }
 }

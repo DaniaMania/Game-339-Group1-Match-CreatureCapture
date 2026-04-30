@@ -3064,9 +3064,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc4c0729d0eaef15797ee7522bc2ff24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  _playerCharacter: player
-  _enemyCharacter: enemy
-  _healAmount: 15
+  _playerData: {fileID: 11400000, guid: 6974a3b582328fa4abcabe3af5e14114, type: 2}
 --- !u!4 &1322888148
 Transform:
   m_ObjectHideFlags: 0
