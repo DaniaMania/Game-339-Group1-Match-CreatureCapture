@@ -1,40 +1,38 @@
-using Game339.Shared.Diagnostics;
+using System;
 
-namespace Game.Runtime
+public class AttackService
 {
-    public class AttackService
+    /// <summary>
+    /// Attacker takes away Target health 
+    /// </summary>
+    /// <param name="attacker">attacking</param>
+    /// <param name="target">getting attack</param>
+    public void Attack(Character attacker, Character target)
     {
-        /// <summary>
-        /// Attacker takes away Target health 
-        /// </summary>
-        /// <param name="attacker">attacking</param>
-        /// <param name="target">getting attack</param>
-        /// <returns>TRUE if target is dead</returns>
-        public bool Attack(Character attacker, Character target)
-        {
-            int dmg = attacker.Attack.Value - target.Defense.Value;
-            if (dmg < 0) dmg = 0;
-            int remainingHealth = target.HP.Value - dmg;
-            if (remainingHealth <= 0)
-            {
-                target.HP.Value = 0;
-                return true;
-            }
-
-            target.HP.Value = remainingHealth;
-            return false;
-        }
-
-        public void Heal(Character healer)
-        {
-            int healed = healer.HP.Value + 15;
-            if (healed > healer.MaxHP.Value) healed = healer.MaxHP.Value;
-            healer.HP.Value = healed;
-        }
-
-        public void HealToFull(Character character)
-        {
-            character.HP.Value = character.MaxHP.Value;
-        }
+        int dmg = Math.Max(0, attacker.Attack.Value - target.Defense.Value);
+        target.ApplyDamage(dmg);
     }
-}
+
+    public void Heal(Character healer)
+    {
+        int healed = healer.HP.Value + 15;
+        if (healed > healer.MaxHP.Value) healed = healer.MaxHP.Value;
+        healer.HP.Value = healed;
+    }
+
+    public void HealToFull(Character character)
+    {
+        character.HP.Value = character.MaxHP.Value;
+    }
+}           
+
+// int remainingHealth = target.HP.Value - dmg;
+// if (remainingHealth <= 0)
+// {
+//     target.HP.Value = 0;
+//     OnTargetDead?.Invoke(target);
+//     return;
+// }
+//
+// target.HP.Value = remainingHealth;
+// OnTargetTakeDamage?.Invoke(target);

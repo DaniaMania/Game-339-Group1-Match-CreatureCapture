@@ -1,27 +1,28 @@
 using System;
 using Game.Runtime;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class PlayerControllerView : MonoBehaviour
+public class PlayerControllerView : ObserverMonoBehaviour
 {
     [SerializeField] private Button _attackButton;
     [SerializeField] private Button _healButton;
     
-    private void Awake()
+    protected override void Subscribe()
     {
         ServiceResolver.Resolve<TurnEngine>().IsPlayerTurn.ChangeEvent += SetInteractable;
     }
 
-    private void OnDestroy()
+    protected override void Unsubscribe()
     {
         ServiceResolver.Resolve<TurnEngine>().IsPlayerTurn.ChangeEvent -= SetInteractable;
     }
 
-    private void Start()
+    public void AssignListeners(UnityAction PlayerAttack, UnityAction Heal)
     {
-        _attackButton.onClick.AddListener(PlayerController.Instance.PlayerAttack);
-        _healButton.onClick.AddListener(PlayerController.Instance.Heal);
+        _attackButton.onClick.AddListener(PlayerAttack);
+        _healButton.onClick.AddListener(Heal);
     }
 
     private void SetInteractable(bool value)

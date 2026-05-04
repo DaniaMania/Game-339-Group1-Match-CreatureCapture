@@ -2,27 +2,18 @@ using Game.Runtime;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class EnemyUpgradeController : MonoBehaviour
+public class EnemyUpgradeController : Controller
 {
-    [SerializeField] private string _enemyCharacter;
     [SerializeField] private int _attackUpgradeAmount = 1;
     [SerializeField] private int _maxHPUpgradeAmount = 1;
-    
-    private Character _enemy;
-    private TurnEngine _turnEngine;
-    private AttackService _attackService;
 
-    private void Awake()
+    protected override void Subscribe()
     {
-        _enemy = ServiceResolver.Resolve<CharacterManager>().Get(_enemyCharacter);
-        _turnEngine = ServiceResolver.Resolve<TurnEngine>();
-        _attackService = ServiceResolver.Resolve<AttackService>();
-        
         _turnEngine.EncounterEnd += UpgradeEnemy;
         _turnEngine.EncounterStart += HealEnemy;
     }
 
-    private void OnDestroy()
+    protected override void Unsubscribe()
     {
         _turnEngine.EncounterEnd -= UpgradeEnemy;
         _turnEngine.EncounterStart -= HealEnemy;
@@ -30,7 +21,7 @@ public class EnemyUpgradeController : MonoBehaviour
 
     public void ResetEnemy()
     {
-        _enemy.ResetValues();
+        Enemy.ResetValues();
     }
 
     private void UpgradeEnemy(bool isPlayerWin)
@@ -41,11 +32,11 @@ public class EnemyUpgradeController : MonoBehaviour
         switch (random)
         {
             case 0:
-                _enemy.Attack.Value += _attackUpgradeAmount;
+                Enemy.Attack.Value += _attackUpgradeAmount;
                 Debug.Log($"enemy upgraded attack by {_attackUpgradeAmount}");
                 break;
             case 1:
-                _enemy.MaxHP.Value += _maxHPUpgradeAmount;
+                Enemy.MaxHP.Value += _maxHPUpgradeAmount;
                 Debug.Log($"enemy upgraded max health by {_maxHPUpgradeAmount}");
                 break;
         }
@@ -53,6 +44,6 @@ public class EnemyUpgradeController : MonoBehaviour
 
     private void HealEnemy()
     {
-        _attackService.HealToFull(_enemy);
+        _attackService.HealToFull(Enemy);
     }
 }

@@ -1,32 +1,29 @@
-using System;
 using System.Collections;
-using Game.Runtime;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : BattleController
 {
-   private TurnEngine _turnEngine;
+   protected override Character ControllerCharacter => Enemy;
 
-   private void Awake()
+   protected override void Subscribe()
    {
-      ServiceResolver.Resolve<TurnEngine>().TurnEnd += AttackPlayer;
+      _turnEngine.PlayerTurnEnd += Attack;
    }
 
-   private void OnDestroy()
+   protected override void Unsubscribe()
    {
-      ServiceResolver.Resolve<TurnEngine>().TurnEnd -= AttackPlayer;
+      _turnEngine.PlayerTurnEnd -= Attack;
    }
 
-   private void AttackPlayer()
+   public override void Attack()
    {
       StartCoroutine(AttackDelay());
       return;
 
       IEnumerator AttackDelay()
       {
-         yield return new WaitForSeconds(0.75f);
-         PlayerController.Instance.EnemyAttack();
+         yield return new WaitForSeconds(1.2f);
+         AttackImplementation();
       }
    }
 }

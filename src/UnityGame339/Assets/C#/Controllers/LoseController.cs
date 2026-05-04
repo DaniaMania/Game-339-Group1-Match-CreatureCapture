@@ -1,30 +1,18 @@
-using Game.Runtime;
 using Game339.Shared;
 using UnityEngine;
 
-public class LoseController : MonoBehaviour
+public class LoseController : Controller
 {
-    [SerializeField] private string _playerCharacter;
-    [SerializeField] private string _enemyCharacter;
-    
-    private Character _player;
-    private Character _enemy;
-    private TurnEngine _turnEngine;
-    
     public ObservableValue<bool> IsLoseShowing { private set; get; } = new ObservableValue<bool>();
-    
-    private void Awake()
+
+    protected override void Subscribe()
     {
-        _player = ServiceResolver.Resolve<CharacterManager>().Get(_playerCharacter);
-        _enemy = ServiceResolver.Resolve<CharacterManager>().Get(_enemyCharacter);
-        _turnEngine = ServiceResolver.Resolve<TurnEngine>();
-        
         _turnEngine.EncounterEnd += OnEncounterEnd;
     }
-    
-    private void OnDestroy()
+
+    protected override void Unsubscribe()
     {
-        if (_turnEngine != null) _turnEngine.EncounterEnd -= OnEncounterEnd;
+        _turnEngine.EncounterEnd -= OnEncounterEnd;
     }
     
     private void OnEncounterEnd(bool playerWon)
@@ -37,12 +25,11 @@ public class LoseController : MonoBehaviour
     public void Restart()
     {
         if (!IsLoseShowing.Value) return;
-        _player.ResetValues();
-        _enemy.ResetValues();
-        PlayerController.Instance.ResetHealPotency();
+        Player.ResetValues();
+        Enemy.ResetValues();
         IsLoseShowing.Value = false;
-        _turnEngine.EnterEncounter();
-        _turnEngine.StartPlayerTurn();
+        
+        EncounterManager.Instance.BeginNewEncounter();
     }
     
     // called by LoseView button
