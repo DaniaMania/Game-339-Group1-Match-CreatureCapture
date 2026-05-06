@@ -3,14 +3,6 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-/// One action button in the Battle UI action bar.
-/// Represents the active ability of a body part.
-///
-/// Hierarchy expected:
-///   ActionButton (this script + Button)
-///     ├── AbilityLabel    (TextMeshProUGUI)
-///     ├── DamageLabel     (TextMeshProUGUI — e.g. "10 dmg")
-///     └── CooldownOverlay (GameObject — shown when on cooldown, future use)
 public class ActionButtonUI : MonoBehaviour
 {
     [SerializeField] private Button button;
