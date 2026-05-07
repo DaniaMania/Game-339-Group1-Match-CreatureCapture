@@ -64,6 +64,7 @@ public class TurnEngine
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
+            _currentState = value;
         }
     }
 
