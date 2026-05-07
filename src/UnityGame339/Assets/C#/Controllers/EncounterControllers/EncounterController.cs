@@ -64,7 +64,7 @@ public abstract class BattleController : EncounterController
    /// changes the TurnEngine state after a short delay 
    /// </summary>
    protected void EndTurn()
-   {
+   { 
       if (Player.HasDied || Enemy.HasDied)
       {
          StartCoroutine(Delay(DEATH_TIME, () => _turnEngine.State = TurnState.ExitEncounter));
