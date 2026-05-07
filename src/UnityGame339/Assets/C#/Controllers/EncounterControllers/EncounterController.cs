@@ -1,4 +1,7 @@
+using System;
+using System.Collections;
 using Game.Runtime;
+using UnityEngine;
 
 /// <summary>
 /// change/update views over the course of an encounter.
@@ -37,37 +40,43 @@ public abstract class EncounterController : Controller
       Player = Enemy = null;
    }
 
+   /// <summary>
+   /// when an encounter begins, setup and view initialization should be done here
+   /// </summary>
    protected abstract void EncounterBegin();
+   
+   /// <summary>
+   /// when an encounter ends, deinitialization should be here
+   /// </summary>
+   /// <param name="isPlayerWin"></param>
    protected abstract void EncounterEnd(bool isPlayerWin);
 }
 
 public abstract class BattleController : EncounterController
 {
-   protected abstract Character ControllerCharacter { get; }
-   private Character ControllerEnemyCharacter => (ControllerCharacter == Player) ? Enemy : Player;
+   //--IMPORTANT-- 
+   //all animations must finish within the times below otherwise they will not be shown in full
+   private const float TURN_TIME = 0.6f;
+   private const float DEATH_TIME = 0.8f;
    
-   protected void AttackImplementation() => _attackService.Attack(ControllerCharacter, ControllerEnemyCharacter);
-
-   protected override void EncounterBegin()
+   /// <summary>
+   /// changes the TurnEngine state after a short delay 
+   /// </summary>
+   protected void EndTurn()
    {
-      ControllerCharacter.OnCharacterTakeDamage += OnTakeDamage;
-      ControllerCharacter.OnCharacterDeath += OnDeath;
+      if (Player.HasDied || Enemy.HasDied)
+      {
+         StartCoroutine(Delay(DEATH_TIME, () => _turnEngine.State = TurnState.ExitEncounter));
+      }
+      else
+      {
+         StartCoroutine(Delay(TURN_TIME, () => _turnEngine.State = TurnState.EndTurn));
+      }
    }
 
-   protected override void EncounterEnd(bool isPlayerWin)
+   private static IEnumerator Delay(float delayTime, Action onComplete)
    {
-      if (!ControllerCharacter) return;
-      
-      ControllerCharacter.OnCharacterTakeDamage -= OnTakeDamage;
-      ControllerCharacter.OnCharacterDeath -= OnDeath; 
+      yield return new WaitForSeconds(delayTime);
+      onComplete.Invoke();
    }
-
-   protected abstract void OnTakeDamage(int amount);
-   protected abstract void OnDeath();
-
-   protected void EndTurn() => _turnEngine.State = TurnState.EndTurn;
-   protected void ExitEncounter() => _turnEngine.State = TurnState.ExitEncounter;
 }
-
-//todo: make this listen for the death callback and have EndTurn act as a signal for the actions being done 
-// rather than the key to end the turn 

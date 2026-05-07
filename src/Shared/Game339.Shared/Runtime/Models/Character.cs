@@ -22,6 +22,8 @@ public class Character : ScriptableObject
     public ObservableValue<int> HealAmount { get; } = new ObservableValue<int>();
     public ObservableValue<int> Speed { get; } = new ObservableValue<int>();
 
+    public bool HasDied { get; private set; } = false;
+
     public event Action<int> OnCharacterTakeDamage;
     public event Action OnCharacterDeath;
     
@@ -37,6 +39,7 @@ public class Character : ScriptableObject
 
     public void ResetValues()
     {
+        HasDied = false;
         MaxHP.Value = _defaultMaxHP;
         HP.Value = _defaultHP;
         Attack.Value = _defaultAttack;
@@ -49,8 +52,12 @@ public class Character : ScriptableObject
     {
         int remainingHealth = HP.Value - damageAmount;
         HP.Value = Mathf.Max(0, remainingHealth);
-        
-        if (HP.Value == 0) OnCharacterDeath?.Invoke();
+
+        if (HP.Value == 0)
+        {
+            HasDied = true;
+            OnCharacterDeath?.Invoke();
+        }
         else OnCharacterTakeDamage?.Invoke(damageAmount);
     }
     

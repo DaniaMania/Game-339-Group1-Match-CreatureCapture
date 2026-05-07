@@ -4,30 +4,14 @@ using UnityEngine;
 
 public class EnemyController : BattleController
 {
-   protected override Character ControllerCharacter => Enemy;
-
-   protected override void Subscribe()
+   protected override void EncounterBegin()
    {
-      base.Subscribe();
       _turnEngine.PlayerTurnEnd += Attack;
    }
 
-   protected override void Unsubscribe()
+   protected override void EncounterEnd(bool isPlayerWin)
    {
-      base.Unsubscribe();
       _turnEngine.PlayerTurnEnd -= Attack;
-   }
-   
-   protected override void OnTakeDamage(int amount)
-   {
-      //do code...
-      EndTurn();
-   }
-   
-   protected override void OnDeath()
-   {
-      //do code...
-      ExitEncounter();
    }
 
    //===== Abilities =====   
@@ -39,8 +23,8 @@ public class EnemyController : BattleController
       IEnumerator AttackDelay()
       {
          yield return new WaitForSeconds(0.8f);
-         AttackImplementation();
-         // EndTurn();
+         _attackService.Attack(Enemy, Player);
+         EndTurn();
       }
    }
 }

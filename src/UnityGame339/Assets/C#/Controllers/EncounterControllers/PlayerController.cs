@@ -3,39 +3,24 @@ using UnityEngine;
 public class PlayerController : BattleController
 {
     [SerializeField] private PlayerControllerView _playerControllerView;
-    
-    protected override Character ControllerCharacter => Player;
 
-    protected override void Subscribe()
+    protected override void EncounterBegin()
     {
-        base.Subscribe();
-        _playerControllerView.AssignListeners(Attack, Heal);
-    }
-    
-    protected override void Unsubscribe()
-    {
-        base.Unsubscribe();
+       _playerControllerView.Initialize(this);
     }
 
-    protected override void OnTakeDamage(int amount)
+    protected override void EncounterEnd(bool isPlayerWin)
     {
-        //do code...
-        EndTurn();
-    }
-    
-    protected override void OnDeath()
-    {
-        //do code...
-       ExitEncounter();
+        _playerControllerView.Deinitialize();
     }
 
     //===== Abilities ===== 
     public void Attack()
     {
-        AttackImplementation();
-        // EndTurn();
+        _attackService.Attack(Player, Enemy);
+        EndTurn();
     }
-    
+
     public void Heal()
     {
         int healed = Mathf.Min(Player.HP.Value + Player.HealAmount.Value, Player.MaxHP.Value);

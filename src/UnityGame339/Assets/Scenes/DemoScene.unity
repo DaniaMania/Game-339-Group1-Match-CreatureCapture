@@ -1400,6 +1400,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeController
   _characterUpgradeView: {fileID: 164293673}
+  _upgradeView: {fileID: 460260279}
   _attackUpgradeAmount: 5
   _healPotencyUpgradeAmount: 5
 --- !u!4 &361464253
@@ -1501,7 +1502,6 @@ MonoBehaviour:
   _upgradeAttackButton: {fileID: 1300819806}
   _healButton: {fileID: 1057759876}
   _upgradeHealButton: {fileID: 2056515891}
-  _controller: {fileID: 361464252}
 --- !u!1 &500212486
 GameObject:
   m_ObjectHideFlags: 0

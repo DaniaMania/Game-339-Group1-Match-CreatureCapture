@@ -35,6 +35,12 @@ public class UpgradeView : TypedView<UpgradeController>, IGamePanel
 
     protected override void DeinitializeView()
     {
+        _upgradeAttackButton.onClick.RemoveListener(_upgradeController.UpgradeAttack);
+        _healButton.onClick.RemoveListener(_upgradeController.HealToFull);
+        _upgradeHealButton.onClick.RemoveListener(_upgradeController.UpgradeHealPotency);
+        
         _upgradeController.IsUpgradeAvailable.ChangeEvent -= SetVisible;
+
+        _upgradeController = null;
     }
 }
