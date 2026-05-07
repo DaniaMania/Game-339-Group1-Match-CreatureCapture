@@ -1,23 +1,18 @@
 using Game339.Shared;
 using UnityEngine;
 
-public class LoseController : Controller
+public class LoseController : EncounterController
 {
-    public ObservableValue<bool> IsLoseShowing { private set; get; } = new ObservableValue<bool>();
+    public ObservableValue<bool> IsLoseShowing { get; } = new ObservableValue<bool>();
 
-    protected override void Subscribe()
+    protected override void EncounterBegin()
     {
-        _turnEngine.EncounterEnd += OnEncounterEnd;
+        IsLoseShowing.Value = false;
     }
 
-    protected override void Unsubscribe()
+    protected override void EncounterEnd(bool isPlayerWin)
     {
-        _turnEngine.EncounterEnd -= OnEncounterEnd;
-    }
-    
-    private void OnEncounterEnd(bool playerWon)
-    {
-        if (playerWon) return;
+        if (isPlayerWin) return;
         IsLoseShowing.Value = true;
     }
     
@@ -26,7 +21,6 @@ public class LoseController : Controller
     {
         if (!IsLoseShowing.Value) return;
         Player.ResetValues();
-        Enemy.ResetValues();
         IsLoseShowing.Value = false;
         
         EncounterManager.Instance.BeginNewEncounter();

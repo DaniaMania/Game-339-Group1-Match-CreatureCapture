@@ -53,4 +53,9 @@ public class Character : ScriptableObject
         if (HP.Value == 0) OnCharacterDeath?.Invoke();
         else OnCharacterTakeDamage?.Invoke(damageAmount);
     }
+    
+    public void HealToFull()
+    {
+        HP.Value = MaxHP.Value;
+    }
 }

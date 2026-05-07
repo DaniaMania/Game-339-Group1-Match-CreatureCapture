@@ -2,7 +2,7 @@ using Game.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterView : MonoBehaviour
+public class CharacterView : TypedView<Character>
 {
     [Header("Values")]
     [SerializeField] private Image _characterImage;
@@ -12,15 +12,17 @@ public class CharacterView : MonoBehaviour
 
     private Character _character;
     
-    public void Initialize(Character character)
+    protected override void InitializeView(Character[] character)
     {
-        _character = character;
-        _characterImage.sprite = character.Icon;
-        _healthView.Subscribe(character);
+        _character = character[0];
+        _characterImage.sprite = _character.Icon;
+        _healthView.Initialize(character);
     }
 
-    private void OnDestroy()
+    protected override void DeinitializeView()
     {
-        _healthView.Unsubscribe();
+        _character = null;
+        if (_characterImage) _characterImage.sprite = null;
+        _healthView.Deinitialize();
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using Game339.Shared;
+using UnityEngine;
 
 public class TurnEngine
 {
@@ -11,19 +12,22 @@ public class TurnEngine
     public event Action PlayerTurnEnd;
     public event Action<int> EnemyTurnStart;
     public event Action EnemyTurnEnd;
+    public event Action TurnStart;
+    public event Action TurnEnd;
 
     //===== Global Information =====
     public ObservableValue<bool> IsPlayerTurn { get; } = new ObservableValue<bool>();
-    public bool isEncounterRunning { private set; get; } = false;
+    public bool IsEncounterRunning { private set; get; } = false;
+    public bool HasTurnStarted { private set; get; } = false;
 
     //===== Encounter Information =====
     private int _turnIndex = 0;
     private ActionPair _firstTurns = new ActionPair();
     private ActionPair _secondTurns = new ActionPair();
     private ActionPair _currentTurns;
-    
-    public Character Player { get; private set; }
-    public Character Enemy { get; private set; }
+
+    private Character _player;
+    private Character _enemy;
 
     private TurnState _currentState;
     public TurnState State
@@ -31,7 +35,8 @@ public class TurnEngine
         get => _currentState;
         set
         {
-            if (!Player || !Enemy)
+            // Debug.Log("switching to turn state: " + value);
+            if (!_player || !_enemy)
             {
                 throw new NullReferenceException($"player and/or enemy have not been " +
                                                  $"setup for encounter, call {nameof(SetupForNewEncounter)}");
@@ -44,15 +49,17 @@ public class TurnEngine
                     EncounterStart?.Invoke();
                     break;
                 case TurnState.StartTurn:
+                    TurnStart?.Invoke();
                     StartTurn();
                     break;
                 case TurnState.EndTurn:
+                    TurnEnd?.Invoke();
                     EndTurn();
                     break;
                 case TurnState.ExitEncounter:
                     bool isPlayerWin = ExitEncounter();
                     EncounterEnd?.Invoke(isPlayerWin);
-                    Player = Enemy = null;
+                    _player = _enemy = null;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
@@ -63,18 +70,20 @@ public class TurnEngine
     public void SetupForNewEncounter(Character player, Character enemy)
     {
         _turnIndex = 0;
-        Player = player;
-        Enemy = enemy;
+        IsPlayerTurn.Value = false;
+        
+        _player = player;
+        _enemy = enemy;
         EncounterSetup?.Invoke(player, enemy);
     }
     
     //===== Encounter =====
     private void EnterEncounter()
     {
-        isEncounterRunning = true;
+        IsEncounterRunning = true;
         
         //resolve who goes first
-        if (Enemy.Speed.Value > Player.Speed.Value)
+        if (_enemy.Speed.Value > _player.Speed.Value)
         {
             _firstTurns.SetPair(StartEnemyTurn, EndEnemyTurn);
             _secondTurns.SetPair(StartPlayerTurn, EndPlayerTurn);
@@ -91,23 +100,27 @@ public class TurnEngine
     private bool ExitEncounter()
     {
         IsPlayerTurn.Value = false;
-        isEncounterRunning = false;
+        IsEncounterRunning = false;
 
         _firstTurns.Clear();
         _secondTurns.Clear();
         
-        return Player.HP.Value != 0;
+        return _player.HP.Value != 0;
     }
 
     //===== Turns =====
     private void StartTurn()
     {
+        HasTurnStarted = true;
+        
         _turnIndex += 1;
         _currentTurns.First?.Invoke();
     }
 
     private void EndTurn()
     {
+        HasTurnStarted = false;
+        
         _currentTurns.Second?.Invoke();
         
         //switch turn order
@@ -162,9 +175,5 @@ public enum TurnState
     EnterEncounter,
     StartTurn,
     EndTurn,
-    // PlayerTurnStart,
-    // EnemyTurnStart,
-    // EnemyTurnEnd,
-    // PlayerTurnEnd,
     ExitEncounter
 }

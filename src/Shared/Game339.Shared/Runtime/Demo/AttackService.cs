@@ -19,11 +19,6 @@ public class AttackService
         if (healed > healer.MaxHP.Value) healed = healer.MaxHP.Value;
         healer.HP.Value = healed;
     }
-
-    public void HealToFull(Character character)
-    {
-        character.HP.Value = character.MaxHP.Value;
-    }
 }           
 
 // int remainingHealth = target.HP.Value - dmg;

@@ -1,5 +1,3 @@
-using System;
-using Game.Runtime;
 using UnityEngine;
 
 public class PlayerController : BattleController
@@ -10,40 +8,38 @@ public class PlayerController : BattleController
 
     protected override void Subscribe()
     {
+        base.Subscribe();
         _playerControllerView.AssignListeners(Attack, Heal);
-        Player.OnCharacterTakeDamage += OnTakeDamage;
-        Player.OnCharacterDeath += OnDeath;
     }
-
+    
     protected override void Unsubscribe()
     {
-        Player.OnCharacterTakeDamage -= OnTakeDamage;
-        Player.OnCharacterDeath -= OnDeath;
+        base.Unsubscribe();
     }
 
     protected override void OnTakeDamage(int amount)
     {
-        //do code
-        base.OnTakeDamage(amount);
+        //do code...
+        EndTurn();
     }
-
+    
     protected override void OnDeath()
     {
-        base.OnDeath();
+        //do code...
+       ExitEncounter();
     }
 
-    //===== Abilities =====
-    public override void Attack()
+    //===== Abilities ===== 
+    public void Attack()
     {
         AttackImplementation();
+        // EndTurn();
     }
-
-
-
+    
     public void Heal()
     {
         int healed = Mathf.Min(Player.HP.Value + Player.HealAmount.Value, Player.MaxHP.Value);
         Player.HP.Value = healed;
-        _turnEngine.State = TurnState.EndTurn;
+        EndTurn();
     }
 }

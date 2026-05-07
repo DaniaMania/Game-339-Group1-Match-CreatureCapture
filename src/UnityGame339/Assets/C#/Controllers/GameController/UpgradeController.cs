@@ -2,8 +2,11 @@ using Game.Runtime;
 using Game339.Shared;
 using UnityEngine;
 
-public class UpgradeController : Controller
+public class UpgradeController : GameController
 {
+    [SerializeField] private CharacterView _characterUpgradeView;
+    [SerializeField] private UpgradeView _upgradeView;
+    [Space]
     [SerializeField] private int _attackUpgradeAmount = 1;
     [SerializeField] private int _healPotencyUpgradeAmount = 1;
 
@@ -12,11 +15,15 @@ public class UpgradeController : Controller
     protected override void Subscribe()
     {
         _turnEngine.EncounterEnd += OnEncounterEnd;
+        _upgradeView.Initialize(this);
+        _characterUpgradeView.Initialize(Player);
     }
 
     protected override void Unsubscribe()
     {
         _turnEngine.EncounterEnd -= OnEncounterEnd;
+        _upgradeView.Deinitialize();
+        _characterUpgradeView.Deinitialize();
     }
 
     private void OnEncounterEnd(bool playerWon)
@@ -37,7 +44,7 @@ public class UpgradeController : Controller
     public void HealToFull()
     {
         if (!IsUpgradeAvailable.Value) return;
-        _attackService.HealToFull(Player);
+        Player.HealToFull();
         StartNextEncounter();
     }
 

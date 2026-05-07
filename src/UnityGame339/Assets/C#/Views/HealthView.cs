@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HealthView : MonoBehaviour
+public class HealthView : TypedView<Character>
 {
     [SerializeField] private TextMeshProUGUI _currentHealthText;
     [SerializeField] private TextMeshProUGUI _maxHealthText;
@@ -10,19 +10,18 @@ public class HealthView : MonoBehaviour
 
     private Character _character;
     
-    public void Subscribe(Character oldCharacter)
+    protected override void InitializeView(Character[] character)
     {
-        _character = oldCharacter;
+        _character = character[0];
         _character.HP.ChangeEvent += OnHealthChange;
         _character.MaxHP.ChangeEvent += OnMaxHealthChange;
         
         OnMaxHealthChange(_character.MaxHP.Value);
         OnHealthChange(_character.HP.Value);
     }
-
-    public void Unsubscribe()
+    
+    protected override void DeinitializeView()
     {
-        if (!_character) return;
         _character.HP.ChangeEvent -= OnHealthChange;
         _character.MaxHP.ChangeEvent -= OnMaxHealthChange;
     }

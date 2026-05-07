@@ -5,6 +5,7 @@ using Random = UnityEngine.Random;
 public class CharacterDatabase : MonoBehaviour
 {
     public static CharacterDatabase Instance;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -13,9 +14,9 @@ public class CharacterDatabase : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
+
         //reset characters
-        ResetPlayerValues();
+        ResetAll();
     }
 
     [SerializeField] private Character _player;
@@ -29,10 +30,32 @@ public class CharacterDatabase : MonoBehaviour
     public static Character GetRandomCharacter() => Instance._enemyList.RandomEntry();
     
     //===== Instance References =====
+    
+    #region Reset
     public void ResetPlayerValues()
     {
         _player.ResetValues();
     }
+
+    public void ResetEnemyValues()
+    {
+        foreach (Character enemy in _enemyList)
+        {
+            enemy.ResetValues();
+        }
+    }
+
+    public void ResetCharacterValue(ref Character character)
+    {
+        character.ResetValues();
+    }
+
+    public void ResetAll()
+    {
+        ResetPlayerValues();
+        ResetEnemyValues();
+    }
+    #endregion
 }
 
 public static class ArrayExtension

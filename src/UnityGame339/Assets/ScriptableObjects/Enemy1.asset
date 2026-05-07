@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d423f799c9bd81c42ad3b19e5372cb37, type: 3}
   m_Name: Enemy1
   m_EditorClassIdentifier: Game339.Shared::Character
-  _defaultMaxHP: 100
+  _characterIcon: {fileID: 297761703447499198, guid: 3d8585073d14ed076a4f299487f17d7b, type: 3}
   _defaultHP: 100
-  _defaultAttack: 20
+  _defaultMaxHP: 100
+  _defaultAttack: 10
   _defaultDefense: 0
   _defaultHealAmount: 5
-  _characterIcon: {fileID: 297761703447499198, guid: 3d8585073d14ed076a4f299487f17d7b, type: 3}
+  _defaultSpeed: 0

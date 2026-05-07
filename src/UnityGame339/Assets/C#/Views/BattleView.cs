@@ -1,24 +1,20 @@
 using Game.Runtime;
 using UnityEngine;
 
-public class BattleView : ObserverMonoBehaviour
+public class BattleView : EncounterController
 {
     [SerializeField] private CharacterView _playerView;
     [SerializeField] private CharacterView _enemyView;
-    
-    protected override void Subscribe()
+
+    protected override void EncounterBegin()
     {
-        ServiceResolver.Resolve<TurnEngine>().EncounterSetup += InitializeViews;
+        _playerView.Initialize(Player);
+        _enemyView.Initialize(Enemy);
     }
 
-    protected override void Unsubscribe()
+    protected override void EncounterEnd(bool isPlayerWin)
     {
-        ServiceResolver.Resolve<TurnEngine>().EncounterSetup -= InitializeViews;
-    }
-
-    private void InitializeViews(Character player, Character enemy)
-    {
-        _playerView.Initialize(player);
-        _enemyView.Initialize(enemy);
+        _playerView.Deinitialize();
+        _enemyView.Deinitialize();
     }
 }
