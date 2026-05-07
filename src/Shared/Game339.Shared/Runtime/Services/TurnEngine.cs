@@ -1,11 +1,11 @@
 using System;
 using Game339.Shared;
-using UnityEngine;
+using Game339.Shared.DependencyInjection;
 
 public class TurnEngine
 {
     //===== Turn Events =====
-    public event Action<Character, Character> EncounterSetup;
+    public event Action<ICharacter, ICharacter> EncounterSetup;
     public event Action EncounterStart;
     public event Action<bool> EncounterEnd;
     public event Action<int> PlayerTurnStart;
@@ -21,13 +21,13 @@ public class TurnEngine
     public bool HasTurnStarted { private set; get; } = false;
 
     //===== Encounter Information =====
-    private int _turnIndex = 0;
+    public int TurnIndex { get; private set; } = 0;
     private ActionPair _firstTurns = new ActionPair();
     private ActionPair _secondTurns = new ActionPair();
     private ActionPair _currentTurns;
 
-    private Character _player;
-    private Character _enemy;
+    private ICharacter _player;
+    private ICharacter _enemy;
 
     private TurnState _currentState;
     public TurnState State
@@ -36,7 +36,7 @@ public class TurnEngine
         set
         {
             // Debug.Log("switching to turn state: " + value);
-            if (!_player || !_enemy)
+            if (_player == null || _enemy == null)
             {
                 throw new NullReferenceException($"player and/or enemy have not been " +
                                                  $"setup for encounter, call {nameof(SetupForNewEncounter)}");
@@ -67,9 +67,9 @@ public class TurnEngine
         }
     }
 
-    public void SetupForNewEncounter(Character player, Character enemy)
+    public void SetupForNewEncounter(ICharacter player, ICharacter enemy)
     {
-        _turnIndex = 0;
+        TurnIndex = 0;
         IsPlayerTurn.Value = false;
         
         _player = player;
@@ -113,7 +113,7 @@ public class TurnEngine
     {
         HasTurnStarted = true;
         
-        _turnIndex += 1;
+        TurnIndex += 1;
         _currentTurns.First?.Invoke();
     }
 
@@ -124,7 +124,7 @@ public class TurnEngine
         _currentTurns.Second?.Invoke();
         
         //switch turn order
-        _currentTurns = _turnIndex % 2 == 0 ? _firstTurns : _secondTurns;
+        _currentTurns = TurnIndex % 2 == 0 ? _firstTurns : _secondTurns;
     }
     
     //===== Character Turns =====
@@ -132,7 +132,7 @@ public class TurnEngine
     private void StartPlayerTurn()
     {
         IsPlayerTurn.Value = true;
-        PlayerTurnStart?.Invoke(_turnIndex);
+        PlayerTurnStart?.Invoke(TurnIndex);
     }
     
     private void EndPlayerTurn()
@@ -144,7 +144,7 @@ public class TurnEngine
     //-- Enemy --
     private void StartEnemyTurn()
     {
-        EnemyTurnStart?.Invoke(_turnIndex);
+        EnemyTurnStart?.Invoke(TurnIndex);
     }
 
     private void EndEnemyTurn()

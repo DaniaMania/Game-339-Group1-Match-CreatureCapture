@@ -1,9 +1,11 @@
 using System;
 using Game339.Shared;
+using Game339.Shared.DependencyInjection;
+using Game339.Shared.Models;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "CharacterData", menuName = "Game/Character")]
-public class Character : ScriptableObject
+public class Character : ScriptableObject, ICharacter
 {
     [SerializeField] private Sprite _characterIcon;
     public Sprite Icon => _characterIcon;

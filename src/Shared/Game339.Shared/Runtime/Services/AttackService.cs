@@ -1,4 +1,6 @@
 using System;
+using Game339.Shared.DependencyInjection;
+using Game339.Shared.Models;
 
 public class AttackService
 {
@@ -7,13 +9,13 @@ public class AttackService
     /// </summary>
     /// <param name="attacker">attacking</param>
     /// <param name="target">getting attack</param>
-    public void Attack(Character attacker, Character target)
+    public void Attack(ICharacter attacker, ICharacter target)
     {
         int dmg = Math.Max(0, attacker.Attack.Value - target.Defense.Value);
         target.ApplyDamage(dmg);
     }
 
-    public void Heal(Character healer)
+    public void Heal(ICharacter healer)
     {
         int healed = healer.HP.Value + 15;
         if (healed > healer.MaxHP.Value) healed = healer.MaxHP.Value;

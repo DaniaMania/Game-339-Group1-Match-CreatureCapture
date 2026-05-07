@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Game.Runtime;
+using Game339.Shared.DependencyInjection;
 using UnityEngine;
 
 /// <summary>
@@ -27,10 +28,10 @@ public abstract class EncounterController : Controller
       if (_turnEngine.IsEncounterRunning) EndNewEncounter(false);
    }
 
-   private void StartNewEncounter(Character player, Character enemy)
+   private void StartNewEncounter(ICharacter player, ICharacter enemy)
    {
-      Player = player;
-      Enemy = enemy;
+      Player = (Character)player;
+      Enemy = (Character)enemy;
       EncounterBegin();
    }
 
