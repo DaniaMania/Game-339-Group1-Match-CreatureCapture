@@ -1,34 +1,46 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UpgradeView : MonoBehaviour
+public class UpgradeView : TypedView<UpgradeController>, IGamePanel
 {
-    [SerializeField] private GameObject _panel;
+    [SerializeField] private CanvasGroup _panel;
     [SerializeField] private Button _upgradeAttackButton;
     [SerializeField] private Button _healButton;
     [SerializeField] private Button _upgradeHealButton;
-    [SerializeField] private UpgradeController _controller;
-
-    private void Awake()
-    {
-        _controller.IsUpgradeAvailable.ChangeEvent += SetVisible;
-    }
-
-    private void OnDestroy()
-    {
-        if (_controller != null) _controller.IsUpgradeAvailable.ChangeEvent -= SetVisible;
-    }
+    
+    private UpgradeController _upgradeController;
 
     private void Start()
     {
-        _upgradeAttackButton.onClick.AddListener(_controller.UpgradeAttack);
-        _healButton.onClick.AddListener(_controller.HealToFull);
-        _upgradeHealButton.onClick.AddListener(_controller.UpgradeHealPotency);
-        _panel.SetActive(false);
+        SetVisible(false);
     }
 
-    private void SetVisible(bool value)
+    public void SetVisible(bool value)
     {
-        _panel.SetActive(value);
+        _panel.alpha = (value) ? 1f : 0f;
+        _panel.interactable = value;
+        _panel.blocksRaycasts = value;
+    }
+
+    protected override void InitializeView(UpgradeController[] args)
+    {
+        _upgradeController = args[0];
+        
+        _upgradeAttackButton.onClick.AddListener(_upgradeController.UpgradeAttack);
+        _healButton.onClick.AddListener(_upgradeController.HealToFull);
+        _upgradeHealButton.onClick.AddListener(_upgradeController.UpgradeHealPotency);
+        
+        _upgradeController.IsUpgradeAvailable.ChangeEvent += SetVisible;
+    }
+
+    protected override void DeinitializeView()
+    {
+        _upgradeAttackButton.onClick.RemoveListener(_upgradeController.UpgradeAttack);
+        _healButton.onClick.RemoveListener(_upgradeController.HealToFull);
+        _upgradeHealButton.onClick.RemoveListener(_upgradeController.UpgradeHealPotency);
+        
+        _upgradeController.IsUpgradeAvailable.ChangeEvent -= SetVisible;
+
+        _upgradeController = null;
     }
 }

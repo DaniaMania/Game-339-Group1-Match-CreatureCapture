@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoseView : MonoBehaviour
+public class LoseView : MonoBehaviour, IGamePanel
 {
-    [SerializeField] private GameObject _panel;
+    [SerializeField] private CanvasGroup _panel;
     [SerializeField] private Button _restartButton;
     [SerializeField] private Button _quitButton;
     [SerializeField] private LoseController _controller;
@@ -22,11 +22,13 @@ public class LoseView : MonoBehaviour
     {
         _restartButton.onClick.AddListener(_controller.Restart);
         _quitButton.onClick.AddListener(_controller.Quit);
-        _panel.SetActive(false);
+        SetVisible(false);
     }
 
-    private void SetVisible(bool value)
+    public void SetVisible(bool value)
     {
-        _panel.SetActive(value);
+        _panel.alpha = (value) ? 1f : 0f;
+        _panel.interactable = value;
+        _panel.blocksRaycasts = value;
     }
 }

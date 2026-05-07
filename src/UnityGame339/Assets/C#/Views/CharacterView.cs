@@ -2,26 +2,27 @@ using Game.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterView : ObserverMonoBehaviour
+public class CharacterView : TypedView<Character>
 {
-    [Header("Initialize")]
-    [SerializeField] private string _characterID; //TODO replace with scriptable object reference
-    private Character _character;
-    
     [Header("Values")]
     [SerializeField] private Image _characterImage;
     
     [Header("View")]
     [SerializeField] private HealthView _healthView;
+
+    private Character _character;
     
-    protected override void Subscribe()
+    protected override void InitializeView(Character[] character)
     {
-        _character = ServiceResolver.Resolve<CharacterManager>().Get(_characterID);
-        _healthView.Subscribe(_character);
+        _character = character[0];
+        _characterImage.sprite = _character.Icon;
+        _healthView.Initialize(character);
     }
 
-    protected override void Unsubscribe()
+    protected override void DeinitializeView()
     {
-        _healthView.Unsubscribe();
+        _character = null;
+        if (_characterImage) _characterImage.sprite = null;
+        _healthView.Deinitialize();
     }
 }
