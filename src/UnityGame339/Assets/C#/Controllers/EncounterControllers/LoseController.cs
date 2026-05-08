@@ -1,21 +1,40 @@
 using Game339.Shared;
 using UnityEngine;
 
-public class LoseController : EncounterController
+public class LoseController : GameController
 {
     public ObservableValue<bool> IsLoseShowing { get; } = new ObservableValue<bool>();
 
-    protected override void EncounterBegin()
+    protected new void Start()
+    {
+        base.Start();
+        IsLoseShowing.Value = false;
+    }
+
+    protected override void Subscribe()
+    {
+        _turnEngine.EncounterStart += DisableLose;
+        _turnEngine.EncounterEnd += TestLose;
+    }
+    
+    protected override void Unsubscribe()
+    {
+        _turnEngine.EncounterStart -= DisableLose;
+        _turnEngine.EncounterEnd -= TestLose;
+    }
+
+    private void DisableLose()
     {
         IsLoseShowing.Value = false;
     }
 
-    protected override void EncounterEnd(bool isPlayerWin)
+    private void TestLose(bool isPlayerWin)
     {
         if (isPlayerWin) return;
         IsLoseShowing.Value = true;
     }
     
+
     // called by LoseView button
     public void Restart()
     {

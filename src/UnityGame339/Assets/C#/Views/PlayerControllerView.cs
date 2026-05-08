@@ -1,7 +1,4 @@
-using System;
-using Game.Runtime;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class PlayerControllerView : TypedView<PlayerController>
@@ -22,14 +19,16 @@ public class PlayerControllerView : TypedView<PlayerController>
         
         _attackButton.onClick.AddListener(_playerController.Attack);
         _healButton.onClick.AddListener(_playerController.Heal);
-        ServiceResolver.Resolve<TurnEngine>().IsPlayerTurn.ChangeEvent += SetInteractable;
+        
+        _playerController.IsInteractable.ChangeEvent += SetInteractable;
     }
 
     protected override void DeinitializeView()
     {
         _attackButton.onClick.RemoveListener(_playerController.Attack);
         _healButton.onClick.RemoveListener(_playerController.Heal);
-        ServiceResolver.Resolve<TurnEngine>().IsPlayerTurn.ChangeEvent -= SetInteractable;
+        
+        _playerController.IsInteractable.ChangeEvent -= SetInteractable;
     }
     
     private void SetInteractable(bool value)

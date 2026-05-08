@@ -8,9 +8,9 @@ public class TurnEngine
     public event Action<ICharacter, ICharacter> EncounterSetup;
     public event Action EncounterStart;
     public event Action<bool> EncounterEnd;
-    public event Action<int> PlayerTurnStart;
+    public event Action PlayerTurnStart;
     public event Action PlayerTurnEnd;
-    public event Action<int> EnemyTurnStart;
+    public event Action EnemyTurnStart;
     public event Action EnemyTurnEnd;
     public event Action TurnStart;
     public event Action TurnEnd;
@@ -133,7 +133,7 @@ public class TurnEngine
     private void StartPlayerTurn()
     {
         IsPlayerTurn.Value = true;
-        PlayerTurnStart?.Invoke(TurnIndex);
+        PlayerTurnStart?.Invoke();
     }
     
     private void EndPlayerTurn()
@@ -145,7 +145,7 @@ public class TurnEngine
     //-- Enemy --
     private void StartEnemyTurn()
     {
-        EnemyTurnStart?.Invoke(TurnIndex);
+        EnemyTurnStart?.Invoke();
     }
 
     private void EndEnemyTurn()
