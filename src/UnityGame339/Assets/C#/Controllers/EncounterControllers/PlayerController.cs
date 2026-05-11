@@ -67,7 +67,6 @@ public class PlayerController : BattleController
         if (arm == null) return;
         if (_armCooldowns[armIndex] > 0) return;
 
-        // Lock input immediately so the player can't click anything during multihit playback.
         IsInteractable.Value = false;
         StartCoroutine(UseArmCoroutine(armIndex, arm));
     }
@@ -82,8 +81,17 @@ public class PlayerController : BattleController
             if (i < hits - 1) yield return new WaitForSeconds(_multihitDelay);
         }
 
-        _armCooldowns[armIndex] = arm.cooldownTurns;
-        _playerControllerView.RefreshArmCooldowns(_armCooldowns);
+        // Store cooldownTurns + 1 so that the immediate tick at OnPlayerTurnEnd lands
+        // on cooldownTurns. That gives N full lockout turns matching the authored value.
+        // Skipped entirely when cooldownTurns is 0 so no-cooldown abilities don't show
+        // a "1" overlay flash before being ticked away.
+        if (arm.cooldownTurns > 0)
+        {
+            _armCooldowns[armIndex] = arm.cooldownTurns + 1;
+        }
+        // No RefreshArmCooldowns here — the post-tick refresh in OnPlayerTurnEnd will
+        // show the correct value, avoiding a brief flash of cooldownTurns+1 in the UI.
+
         End();
     }
 

@@ -56,6 +56,7 @@ public class Character : ScriptableObject, ICharacter
         WeaknessDuration.Value = 0;
         VulnerabilityDuration.Value = 0;
         RecomputeStats();
+        HP.Value = MaxHP.Value;
     }
 
     public void RecomputeStats()

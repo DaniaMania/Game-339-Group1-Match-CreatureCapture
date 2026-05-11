@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 183737f2efaca07498080745ade4cd6f, type: 3}
-  m_Name: DefaultArm1
+  m_Name: DefaultArm3
   m_EditorClassIdentifier: Assembly-CSharp::BodyPart
-  partName: Dog Arm
+  partName: Crab Arm
   partType: 0
   icon: {fileID: 0}
-  maxHPModifier: 10
+  maxHPModifier: 0
   attackModifier: 0
-  abilityName: Rabies
-  abilityDescription: A Quick, Violent Swipe
-  abilityType: 4
-  abilityValue: 3
+  abilityName: Guard
+  abilityDescription: Your Crustacious Arm Guards
+  abilityType: 2
+  abilityValue: 25
   abilityHits: 1
-  cooldownTurns: 2
+  cooldownTurns: 1
   passiveDescription: 
   passiveType: 0
   passiveValue: 0
