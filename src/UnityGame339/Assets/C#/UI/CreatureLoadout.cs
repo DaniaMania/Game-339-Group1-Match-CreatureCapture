@@ -1,80 +1,43 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-// Holds the six body part slots for a creature
-// Attach to a GameObject or embed in a MonoBehaviour as a serialized field
+// Holds the equipped body parts for a creature.
+// Embedded as a serialized field on Character. Character holds base stats;
+// this just tracks which parts are equipped and aggregates their modifiers.
+
 [System.Serializable]
 public class CreatureLoadout
 {
-    [Header("Creature Identity")]
-    public string creatureName = "My Creature";
-    public int maxHealth = 100;
-    public int currentHealth = 100;
+    [Header("Swappable Slots")]
+    public BodyPart[] arms = new BodyPart[2];
+    public BodyPart[] legs = new BodyPart[2];
 
-    [Header("Body Parts")]
-    public BodyPart head;
-    public BodyPart leftArm;
-    public BodyPart torso;
-    public BodyPart rightArm;
-    public BodyPart leftLeg;
-    public BodyPart rightLeg;
-
-    // Accessors
-
-    public BodyPart GetPart(BodyPartType type)
+    // Yields every equipped part (non-null only).
+    public IEnumerable<BodyPart> GetEquippedParts()
     {
-        return type switch
+        if (arms != null)
         {
-            BodyPartType.Head      => head,
-            BodyPartType.LeftArm   => leftArm,
-            BodyPartType.Torso     => torso,
-            BodyPartType.RightArm  => rightArm,
-            BodyPartType.LeftLeg   => leftLeg,
-            BodyPartType.RightLeg  => rightLeg,
-            _                      => null
-        };
-    }
-
-    public void SetPart(BodyPartType type, BodyPart part)
-    {
-        switch (type)
+            foreach (BodyPart arm in arms)
+                if (arm != null) yield return arm;
+        }
+        if (legs != null)
         {
-            case BodyPartType.Head:      head      = part; break;
-            case BodyPartType.LeftArm:   leftArm   = part; break;
-            case BodyPartType.Torso:     torso     = part; break;
-            case BodyPartType.RightArm:  rightArm  = part; break;
-            case BodyPartType.LeftLeg:   leftLeg   = part; break;
-            case BodyPartType.RightLeg:  rightLeg  = part; break;
+            foreach (BodyPart leg in legs)
+                if (leg != null) yield return leg;
         }
     }
 
-    // Returns all equipped parts (non-null only)
-    public List<BodyPart> GetEquippedParts()
+    public int GetTotalMaxHPModifier()
     {
-        var parts = new List<BodyPart>();
-        foreach (BodyPartType t in System.Enum.GetValues(typeof(BodyPartType)))
-        {
-            var p = GetPart(t);
-            if (p != null) parts.Add(p);
-        }
-        return parts;
+        int total = 0;
+        foreach (BodyPart part in GetEquippedParts()) total += part.maxHPModifier;
+        return total;
     }
 
-    // Returns all equipped parts that have a valid active ability
-    public List<BodyPart> GetActiveAbilities() => GetEquippedParts();
-
-    public bool IsAlive => currentHealth > 0;
-
-    public void TakeDamage(int amount)
+    public int GetTotalAttackModifier()
     {
-        currentHealth = Mathf.Max(0, currentHealth - amount);
+        int total = 0;
+        foreach (BodyPart part in GetEquippedParts()) total += part.attackModifier;
+        return total;
     }
-
-    public void Heal(int amount)
-    {
-        currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
-    }
-
-    // TODO: Add status effect list (poisoned, stunned, shielded…)
-    // TODO: Add merge logic when two same-creature loadouts are combined
 }

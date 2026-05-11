@@ -15,7 +15,14 @@ MonoBehaviour:
   _characterIcon: {fileID: 4334783836991956000, guid: 1975bf5042e59a783bbb6495cf345665, type: 3}
   _defaultHP: 100
   _defaultMaxHP: 100
-  _defaultAttack: 30
+  _defaultAttack: 10
   _defaultDefense: 0
-  _defaultHealAmount: 30
-  _defaultSpeed: 1
+  _defaultHealAmount: 0
+  _defaultSpeed: 0
+  _loadout:
+    arms:
+    - {fileID: 11400000, guid: 45d6d2b2c8394b2479d5b5545ebf2c7f, type: 2}
+    - {fileID: 11400000, guid: 5645040d72265cf4cba821cef9beaae9, type: 2}
+    legs:
+    - {fileID: 11400000, guid: 8eb7a09520b84ed4d8c648c7de92908a, type: 2}
+    - {fileID: 11400000, guid: 8b9d72d5c6bb3bb40a60b588fdef17e2, type: 2}
