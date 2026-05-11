@@ -3067,6 +3067,7 @@ GameObject:
   - component: {fileID: 1322083984}
   - component: {fileID: 1322083983}
   - component: {fileID: 1322083986}
+  - component: {fileID: 1322083987}
   m_Layer: 5
   m_Name: GamePanel
   m_TagString: Untagged
@@ -3149,6 +3150,20 @@ CanvasRenderer:
   m_GameObject: {fileID: 1322083981}
   m_CullTransparentMesh: 1
 --- !u!114 &1322083986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1322083981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d350e5e7cb69829db90842acb91f0e40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattleView
+  _playerView: {fileID: 7097793186288296053}
+  _enemyView: {fileID: 1385752620}
+--- !u!114 &1322083987
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
