@@ -371,7 +371,7 @@ MonoBehaviour:
   _statusEffectsView: {fileID: 254424085634054255}
   _hitFlashColor: {r: 1, g: 0, b: 0, a: 1}
   _hitFeedbackDuration: 0.3
-  _hitTiltAngle: 12
+  _hitTiltAngle: 15
 --- !u!1 &4488914816811173380
 GameObject:
   m_ObjectHideFlags: 0
