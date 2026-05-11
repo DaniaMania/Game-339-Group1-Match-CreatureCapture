@@ -3531,6 +3531,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4795304015190427383, guid: 80838ca5ed963f462b5abe5084be58dc, type: 3}
+      propertyPath: _nameText
+      value: 
+      objectReference: {fileID: 2018637438}
+    - target: {fileID: 4795304015190427383, guid: 80838ca5ed963f462b5abe5084be58dc, type: 3}
+      propertyPath: _character
+      value: 
+      objectReference: {fileID: 11400000, guid: 57242a78e3273e0539f42e8e23342795, type: 2}
+    - target: {fileID: 4795304015190427383, guid: 80838ca5ed963f462b5abe5084be58dc, type: 3}
       propertyPath: _characterID
       value: enemy
       objectReference: {fileID: 0}
@@ -5576,6 +5584,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4795304015190427383, guid: 80838ca5ed963f462b5abe5084be58dc, type: 3}
+      propertyPath: _nameText
+      value: 
+      objectReference: {fileID: 655296948}
+    - target: {fileID: 4795304015190427383, guid: 80838ca5ed963f462b5abe5084be58dc, type: 3}
+      propertyPath: _character
+      value: 
+      objectReference: {fileID: 11400000, guid: 31206617436b6bad8b9e46b5d0e91796, type: 2}
     - target: {fileID: 4795304015190427383, guid: 80838ca5ed963f462b5abe5084be58dc, type: 3}
       propertyPath: _characterID
       value: player
