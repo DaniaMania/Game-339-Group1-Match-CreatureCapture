@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BodyPart
   partName: Lion Arm
   partType: 0
-  icon: {fileID: 0}
+  icon: {fileID: 4334783836991956000, guid: 1975bf5042e59a783bbb6495cf345665, type: 3}
   maxHPModifier: 0
   attackModifier: 0
   abilityName: Poke

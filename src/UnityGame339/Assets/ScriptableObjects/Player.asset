@@ -21,7 +21,7 @@ MonoBehaviour:
   _defaultSpeed: 0
   _loadout:
     arms:
-    - {fileID: 11400000, guid: 45d6d2b2c8394b2479d5b5545ebf2c7f, type: 2}
+    - {fileID: 11400000, guid: 7f2930b7dcd841947a1f711869dd3375, type: 2}
     - {fileID: 11400000, guid: 5645040d72265cf4cba821cef9beaae9, type: 2}
     legs:
     - {fileID: 11400000, guid: 8eb7a09520b84ed4d8c648c7de92908a, type: 2}
