@@ -1,3 +1,4 @@
+using Game.Runtime;
 using Game339.Shared.DependencyInjection;
 using TMPro;
 using UnityEngine;
@@ -9,15 +10,16 @@ using UnityEngine;
 ///  3. A glow effect on whichever CharacterView is currently active.
 /// Inherits from Controller so it gets the standard subscribe lifecycle and a TurnEngine reference.
 /// </summary>
-public class TurnIndicatorView : Controller
+public class TurnIndicatorView : TypedView<CharacterView>
 {
+    private readonly TurnEngine _turnEngine = ServiceResolver.Resolve<TurnEngine>();
+    
     [Header("Labels")]
     [SerializeField] private TextMeshProUGUI _turnLabel;
     [SerializeField] private TextMeshProUGUI _turnCounterLabel;
-
-    [Header("Character Views (for glow)")]
-    [SerializeField] private CharacterView _playerView;
-    [SerializeField] private CharacterView _enemyView;
+    
+    private CharacterView _playerView;
+    private CharacterView _enemyView;
 
     [Header("Text Formatting")]
     [SerializeField] private string _playerTurnText = "Player's Turn";
@@ -26,21 +28,26 @@ public class TurnIndicatorView : Controller
     [SerializeField] private string _turnCounterFormat = "Turn {0}";
 
     private int _turnNumber;
-
-    protected override void Subscribe()
+    
+    protected override void InitializeView(CharacterView[] arg)
     {
+        _playerView = arg[0];
+        _enemyView = arg[1];
+        
         _turnEngine.EncounterSetup += OnEncounterSetup;
         _turnEngine.PlayerTurnStart += OnPlayerTurnStart;
         _turnEngine.PlayerTurnEnd += OnPlayerTurnEnd;
         _turnEngine.EncounterEnd += OnEncounterEnd;
-
+        
         // The view may be enabled mid-game (e.g. enabled in the editor after Awake).
         // Default state: clear labels and no glow until the next encounter starts.
         ClearAll();
     }
 
-    protected override void Unsubscribe()
+    protected override void DeinitializeView()
     {
+        _playerView = _enemyView = null;
+        
         _turnEngine.EncounterSetup -= OnEncounterSetup;
         _turnEngine.PlayerTurnStart -= OnPlayerTurnStart;
         _turnEngine.PlayerTurnEnd -= OnPlayerTurnEnd;
