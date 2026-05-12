@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 183737f2efaca07498080745ade4cd6f, type: 3}
+  m_Name: DefaultArm2
+  m_EditorClassIdentifier: Assembly-CSharp::BodyPart
+  partName: Lion Arm
+  partType: 0
+  icon: {fileID: 4334783836991956000, guid: 1975bf5042e59a783bbb6495cf345665, type: 3}
+  maxHPModifier: 0
+  attackModifier: 0
+  abilityName: Poke
+  abilityDescription: A Piercing Poke
+  abilityType: 0
+  abilityValue: 3
+  abilityHits: 5
+  cooldownTurns: 2
+  passiveDescription: 
+  passiveType: 0
+  passiveValue: 0

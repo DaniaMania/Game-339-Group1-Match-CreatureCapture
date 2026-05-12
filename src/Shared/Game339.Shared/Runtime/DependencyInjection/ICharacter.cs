@@ -9,7 +9,11 @@ namespace Game339.Shared.DependencyInjection
         public ObservableValue<int> Attack { get; }
         public ObservableValue<int> Defense { get; }
         public ObservableValue<int> HealAmount { get; }
-        public ObservableValue<int> Speed { get; } 
+        public ObservableValue<int> Speed { get; }
+
+        public ObservableValue<int> Block { get; }
+        public ObservableValue<int> WeaknessDuration { get; }
+        public ObservableValue<int> VulnerabilityDuration { get; }
 
         public bool HasDied { get; }
 

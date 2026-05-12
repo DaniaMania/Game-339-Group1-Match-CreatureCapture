@@ -10,19 +10,28 @@ public class Character : ScriptableObject, ICharacter
     [SerializeField] private Sprite _characterIcon;
     public Sprite Icon => _characterIcon;
     
+    [Header("Base Stats (torso)")]
     [SerializeField] private int _defaultHP;
     [SerializeField] private int _defaultMaxHP;
     [SerializeField] private int _defaultAttack;
     [SerializeField] private int _defaultDefense;
     [SerializeField] private int _defaultHealAmount;
     [SerializeField] private int _defaultSpeed;
-    
+
+    [Header("Loadout (equipped parts / enemy drop pool)")]
+    [SerializeField] private CreatureLoadout _loadout = new CreatureLoadout();
+    public CreatureLoadout Loadout => _loadout;
+
     public ObservableValue<int> MaxHP { get; } = new ObservableValue<int>();
     public ObservableValue<int> HP { get; } = new ObservableValue<int>();
     public ObservableValue<int> Attack { get; } = new ObservableValue<int>();
     public ObservableValue<int> Defense { get; } = new ObservableValue<int>();
     public ObservableValue<int> HealAmount { get; } = new ObservableValue<int>();
     public ObservableValue<int> Speed { get; } = new ObservableValue<int>();
+
+    public ObservableValue<int> Block { get; } = new ObservableValue<int>();
+    public ObservableValue<int> WeaknessDuration { get; } = new ObservableValue<int>();
+    public ObservableValue<int> VulnerabilityDuration { get; } = new ObservableValue<int>();
 
     public bool HasDied { get; private set; } = false;
 
@@ -31,12 +40,7 @@ public class Character : ScriptableObject, ICharacter
     
     private void OnEnable()
     {
-        MaxHP.Value = _defaultMaxHP;
-        HP.Value = _defaultHP;
-        Attack.Value = _defaultAttack;
-        Defense.Value = _defaultDefense;
-        HealAmount.Value = _defaultHealAmount;
-        Speed.Value = _defaultSpeed;
+        ResetValues();
     }
 
     public void ResetValues()
@@ -48,21 +52,42 @@ public class Character : ScriptableObject, ICharacter
         Defense.Value = _defaultDefense;
         HealAmount.Value = _defaultHealAmount;
         Speed.Value = _defaultSpeed;
+        Block.Value = 0;
+        WeaknessDuration.Value = 0;
+        VulnerabilityDuration.Value = 0;
+        RecomputeStats();
+        HP.Value = MaxHP.Value;
     }
 
+    public void RecomputeStats()
+    {
+        MaxHP.Value = _defaultMaxHP + _loadout.GetTotalMaxHPModifier();
+        Attack.Value = _defaultAttack + _loadout.GetTotalAttackModifier();
+        if (HP.Value > MaxHP.Value) HP.Value = MaxHP.Value;
+    }
+
+    /// <summary>
+    /// Apply finalized damage to HP. Vulnerability and Block are already accounted for upstream
+    /// by AttackService.DealDamage. This just decrements HP and fires events.
+    /// Both events can fire on a fatal hit so visual hit-feedback still plays on the killing blow.
+    /// </summary>
     public void ApplyDamage(int damageAmount)
     {
-        int remainingHealth = HP.Value - damageAmount;
-        HP.Value = Mathf.Max(0, remainingHealth);
+        if (damageAmount < 0) damageAmount = 0;
+        HP.Value = Mathf.Max(0, HP.Value - damageAmount);
 
-        if (HP.Value == 0)
+        if (damageAmount > 0)
+        {
+            OnCharacterTakeDamage?.Invoke(damageAmount);
+        }
+
+        if (HP.Value == 0 && !HasDied)
         {
             HasDied = true;
             OnCharacterDeath?.Invoke();
         }
-        else OnCharacterTakeDamage?.Invoke(damageAmount);
     }
-    
+
     public void HealToFull()
     {
         HP.Value = MaxHP.Value;
