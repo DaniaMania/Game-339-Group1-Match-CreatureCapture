@@ -975,7 +975,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a589075ccb344c64c8d1454ae9e8ba17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpookyMusicEffect
-  _encountersToMaxSpook: 2
+  _encountersToMaxSpook: 10
   _spookinessCurve:
     serializedVersion: 2
     m_Curve:
@@ -2342,6 +2342,7 @@ GameObject:
   m_Component:
   - component: {fileID: 449338391}
   - component: {fileID: 449338392}
+  - component: {fileID: 449338393}
   m_Layer: 0
   m_Name: AudioController
   m_TagString: Untagged
@@ -2381,6 +2382,29 @@ MonoBehaviour:
   _musicSource: {fileID: 108811122}
   _sfxSource: {fileID: 327626840}
   _defaultBGM: {fileID: 8300000, guid: 331cf5130def00245828a82ad931bc35, type: 3}
+--- !u!114 &449338393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 449338390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d9d884876eb5a647988c12c4ebdd00d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameSFXController
+  _playerAttackClip: {fileID: 8300000, guid: 53c0eaa83b8d3c3428fb4f86e1ffdb71, type: 3}
+  _playerTakeDamageClip: {fileID: 8300000, guid: 362a0fe1a1255b143a48ca48afd94f76, type: 3}
+  _playerBlockClip: {fileID: 8300000, guid: 21c420657f09a7c4caa6f79927ce897e, type: 3}
+  _playerHealClip: {fileID: 8300000, guid: a398994ead91f1e4aa6ed091888b74be, type: 3}
+  _enemyDeathClip: {fileID: 8300000, guid: 7039beae1dd5129419cbf0fb01c19568, type: 3}
+  _playerDeathClip: {fileID: 8300000, guid: 52ef5b85652cf4c4098149951d4168db, type: 3}
+  _playerTurnStartClip: {fileID: 8300000, guid: 3725f44852113964caacdb3cc73501b8, type: 3}
+  _enemyTurnStartClip: {fileID: 8300000, guid: 804f6f95beb52e34995038f9adb3a473, type: 3}
+  _encounterStartClip: {fileID: 8300000, guid: 536c7681f0756d346a27ac2f10854cdb, type: 3}
+  _encounterWinClip: {fileID: 8300000, guid: 3617fc03f3f96364ea1330709890fc6b, type: 3}
+  _encounterLoseClip: {fileID: 8300000, guid: 708ee65a09c5581419a2322cb1f319cc, type: 3}
 --- !u!1 &460260277
 GameObject:
   m_ObjectHideFlags: 0
