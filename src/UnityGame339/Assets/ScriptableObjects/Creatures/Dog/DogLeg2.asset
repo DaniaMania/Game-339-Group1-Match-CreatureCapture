@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 183737f2efaca07498080745ade4cd6f, type: 3}
-  m_Name: DefaultLeg2
+  m_Name: DogLeg2
   m_EditorClassIdentifier: Assembly-CSharp::BodyPart
   partName: Dog Leg
   partType: 1

@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 183737f2efaca07498080745ade4cd6f, type: 3}
-  m_Name: DefaultArm3
+  m_Name: ScorpionLeg2
   m_EditorClassIdentifier: Assembly-CSharp::BodyPart
-  partName: Crab Arm
-  partType: 0
-  icon: {fileID: 21300000, guid: f26ad940d99311b4f94092f1b148e997, type: 3}
+  partName: Scorpion Legs
+  partType: 1
+  icon: {fileID: -1354628032345649555, guid: 6fe946acecc8ea2439af2ab1a35d5601, type: 3}
   maxHPModifier: 0
   attackModifier: 0
-  abilityName: Guard
-  abilityDescription: Your Crustacious Arm Guards
-  abilityType: 2
-  abilityValue: 25
-  abilityHits: 1
-  cooldownTurns: 1
-  passiveDescription: 
-  passiveType: 0
-  passiveValue: 0
+  abilityName: 
+  abilityDescription: 
+  abilityType: 0
+  abilityValue: 0
+  abilityHits: 0
+  cooldownTurns: 0
+  passiveDescription: Block For 5 (Passive)
+  passiveType: 1
+  passiveValue: 5
