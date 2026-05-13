@@ -131,6 +131,8 @@ GameObject:
   - component: {fileID: 6184990}
   - component: {fileID: 6184989}
   - component: {fileID: 6184988}
+  - component: {fileID: 6184991}
+  - component: {fileID: 6184992}
   m_Layer: 5
   m_Name: RestartButton
   m_TagString: Untagged
@@ -240,6 +242,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6184986}
   m_CullTransparentMesh: 1
+--- !u!114 &6184991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6184986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d47e4d8324fdc5a4ebace13b458eef7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSoundUI
+  _clickClip: {fileID: 8300000, guid: a2bddd250c9b18444b1a29d0567ddd71, type: 3}
+--- !u!114 &6184992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6184986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fb9ee159cc81cc47aef9a27044fb104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonAnimator
+  _hoverScale: 1.1
+  _hoverDuration: 0.15
+  _wiggleAngle: 6
+  _wiggleDuration: 0.4
+  _clickPunch: 0.18
+  _clickDuration: 0.25
+  _clickVibrato: 6
 --- !u!1 &14222048
 GameObject:
   m_ObjectHideFlags: 0
@@ -343,6 +377,8 @@ GameObject:
   - component: {fileID: 45081974}
   - component: {fileID: 45081973}
   - component: {fileID: 45081976}
+  - component: {fileID: 45081977}
+  - component: {fileID: 45081978}
   m_Layer: 5
   m_Name: AttackButton
   m_TagString: Untagged
@@ -467,6 +503,38 @@ MonoBehaviour:
   _attackName: Attack
   _attackDescription: A Standard Attack
   _attackIcon: {fileID: 0}
+--- !u!114 &45081977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 45081971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d47e4d8324fdc5a4ebace13b458eef7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSoundUI
+  _clickClip: {fileID: 8300000, guid: a2bddd250c9b18444b1a29d0567ddd71, type: 3}
+--- !u!114 &45081978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 45081971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fb9ee159cc81cc47aef9a27044fb104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonAnimator
+  _hoverScale: 1.1
+  _hoverDuration: 0.15
+  _wiggleAngle: 6
+  _wiggleDuration: 0.4
+  _clickPunch: 0.18
+  _clickDuration: 0.25
+  _clickVibrato: 6
 --- !u!1 &69219722
 GameObject:
   m_ObjectHideFlags: 0
@@ -3427,6 +3495,8 @@ GameObject:
   - component: {fileID: 1057759878}
   - component: {fileID: 1057759877}
   - component: {fileID: 1057759876}
+  - component: {fileID: 1057759879}
+  - component: {fileID: 1057759880}
   m_Layer: 5
   m_Name: HealButton
   m_TagString: Untagged
@@ -3536,6 +3606,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1057759874}
   m_CullTransparentMesh: 1
+--- !u!114 &1057759879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057759874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d47e4d8324fdc5a4ebace13b458eef7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSoundUI
+  _clickClip: {fileID: 8300000, guid: a2bddd250c9b18444b1a29d0567ddd71, type: 3}
+--- !u!114 &1057759880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057759874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fb9ee159cc81cc47aef9a27044fb104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonAnimator
+  _hoverScale: 1.1
+  _hoverDuration: 0.15
+  _wiggleAngle: 6
+  _wiggleDuration: 0.4
+  _clickPunch: 0.18
+  _clickDuration: 0.25
+  _clickVibrato: 6
 --- !u!1 &1060925739
 GameObject:
   m_ObjectHideFlags: 0
@@ -3549,6 +3651,8 @@ GameObject:
   - component: {fileID: 1060925743}
   - component: {fileID: 1060925742}
   - component: {fileID: 1060925741}
+  - component: {fileID: 1060925745}
+  - component: {fileID: 1060925746}
   m_Layer: 5
   m_Name: Arm2Button
   m_TagString: Untagged
@@ -3674,6 +3778,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1060925739}
   m_CullTransparentMesh: 1
+--- !u!114 &1060925745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060925739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d47e4d8324fdc5a4ebace13b458eef7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSoundUI
+  _clickClip: {fileID: 8300000, guid: a2bddd250c9b18444b1a29d0567ddd71, type: 3}
+--- !u!114 &1060925746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060925739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fb9ee159cc81cc47aef9a27044fb104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonAnimator
+  _hoverScale: 1.1
+  _hoverDuration: 0.15
+  _wiggleAngle: 6
+  _wiggleDuration: 0.4
+  _clickPunch: 0.18
+  _clickDuration: 0.25
+  _clickVibrato: 6
 --- !u!1 &1077585222
 GameObject:
   m_ObjectHideFlags: 0
@@ -4234,6 +4370,8 @@ GameObject:
   - component: {fileID: 1300819808}
   - component: {fileID: 1300819807}
   - component: {fileID: 1300819806}
+  - component: {fileID: 1300819809}
+  - component: {fileID: 1300819810}
   m_Layer: 5
   m_Name: UpgradeAttackButton
   m_TagString: Untagged
@@ -4343,6 +4481,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1300819804}
   m_CullTransparentMesh: 1
+--- !u!114 &1300819809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1300819804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d47e4d8324fdc5a4ebace13b458eef7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSoundUI
+  _clickClip: {fileID: 8300000, guid: a2bddd250c9b18444b1a29d0567ddd71, type: 3}
+--- !u!114 &1300819810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1300819804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fb9ee159cc81cc47aef9a27044fb104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonAnimator
+  _hoverScale: 1.1
+  _hoverDuration: 0.15
+  _wiggleAngle: 6
+  _wiggleDuration: 0.4
+  _clickPunch: 0.18
+  _clickDuration: 0.25
+  _clickVibrato: 6
 --- !u!1 &1304086047
 GameObject:
   m_ObjectHideFlags: 0
@@ -4492,6 +4662,8 @@ GameObject:
   - component: {fileID: 1314856039}
   - component: {fileID: 1314856038}
   - component: {fileID: 1314856037}
+  - component: {fileID: 1314856040}
+  - component: {fileID: 1314856041}
   m_Layer: 5
   m_Name: QuitButton
   m_TagString: Untagged
@@ -4601,6 +4773,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1314856035}
   m_CullTransparentMesh: 1
+--- !u!114 &1314856040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1314856035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d47e4d8324fdc5a4ebace13b458eef7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSoundUI
+  _clickClip: {fileID: 8300000, guid: a2bddd250c9b18444b1a29d0567ddd71, type: 3}
+--- !u!114 &1314856041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1314856035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fb9ee159cc81cc47aef9a27044fb104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonAnimator
+  _hoverScale: 1.1
+  _hoverDuration: 0.15
+  _wiggleAngle: 6
+  _wiggleDuration: 0.4
+  _clickPunch: 0.18
+  _clickDuration: 0.25
+  _clickVibrato: 6
 --- !u!1 &1322083981
 GameObject:
   m_ObjectHideFlags: 0
@@ -5666,6 +5870,8 @@ GameObject:
   - component: {fileID: 1406108708}
   - component: {fileID: 1406108707}
   - component: {fileID: 1406108710}
+  - component: {fileID: 1406108711}
+  - component: {fileID: 1406108712}
   m_Layer: 5
   m_Name: Arm1Button
   m_TagString: Untagged
@@ -5791,6 +5997,38 @@ MonoBehaviour:
   abilityLabel: {fileID: 607947402}
   cooldownOverlay: {fileID: 0}
   cooldownLabel: {fileID: 0}
+--- !u!114 &1406108711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1406108705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d47e4d8324fdc5a4ebace13b458eef7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSoundUI
+  _clickClip: {fileID: 8300000, guid: a2bddd250c9b18444b1a29d0567ddd71, type: 3}
+--- !u!114 &1406108712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1406108705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fb9ee159cc81cc47aef9a27044fb104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonAnimator
+  _hoverScale: 1.1
+  _hoverDuration: 0.15
+  _wiggleAngle: 6
+  _wiggleDuration: 0.4
+  _clickPunch: 0.18
+  _clickDuration: 0.25
+  _clickVibrato: 6
 --- !u!1 &1458592944
 GameObject:
   m_ObjectHideFlags: 0
@@ -6802,6 +7040,8 @@ GameObject:
   - component: {fileID: 2056515893}
   - component: {fileID: 2056515892}
   - component: {fileID: 2056515891}
+  - component: {fileID: 2056515894}
+  - component: {fileID: 2056515895}
   m_Layer: 5
   m_Name: UpgradeHealButton
   m_TagString: Untagged
@@ -6911,6 +7151,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2056515889}
   m_CullTransparentMesh: 1
+--- !u!114 &2056515894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056515889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d47e4d8324fdc5a4ebace13b458eef7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSoundUI
+  _clickClip: {fileID: 8300000, guid: a2bddd250c9b18444b1a29d0567ddd71, type: 3}
+--- !u!114 &2056515895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056515889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fb9ee159cc81cc47aef9a27044fb104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonAnimator
+  _hoverScale: 1.1
+  _hoverDuration: 0.15
+  _wiggleAngle: 6
+  _wiggleDuration: 0.4
+  _clickPunch: 0.18
+  _clickDuration: 0.25
+  _clickVibrato: 6
 --- !u!1 &2082683490
 GameObject:
   m_ObjectHideFlags: 0
