@@ -1,28 +1,23 @@
 using Game.Runtime;
 using UnityEngine;
 
-public class BattleView : MonoBehaviour, IGamePanel
+public class BattleView : EncounterController
 {
+    [SerializeField] private TurnIndicatorView _turnIndicatorView;
     [SerializeField] private CharacterView _playerView;
     [SerializeField] private CharacterView _enemyView;
 
-    private TurnEngine _turnEngine;
-
-    private void Awake()
+    protected override void EncounterBegin()
     {
-        _turnEngine = ServiceResolver.Resolve<TurnEngine>();
-        _turnEngine.EncounterStart += OnEncounterStart;
-        _turnEngine.EncounterEnd += OnEncounterEnd;
+        _playerView.Initialize(Player);
+        _enemyView.Initialize(Enemy);
+        _turnIndicatorView.Initialize(_playerView, _enemyView);
     }
 
-    private void OnDestroy()
+    protected override void EncounterEnd(bool isPlayerWin)
     {
-        if (_turnEngine == null) return;
-        _turnEngine.EncounterStart -= OnEncounterStart;
-        _turnEngine.EncounterEnd -= OnEncounterEnd;
+        _playerView.Deinitialize();
+        _enemyView.Deinitialize();
+        _turnIndicatorView.Deinitialize(); 
     }
-
-    public void SetVisible(bool visible) => gameObject.SetActive(visible);
-    private void OnEncounterStart() => SetVisible(true);
-    private void OnEncounterEnd(bool playerWon) => SetVisible(false);
 }
