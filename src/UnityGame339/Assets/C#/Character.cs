@@ -32,6 +32,7 @@ public class Character : ScriptableObject, ICharacter
     public ObservableValue<int> Block { get; } = new ObservableValue<int>();
     public ObservableValue<int> WeaknessDuration { get; } = new ObservableValue<int>();
     public ObservableValue<int> VulnerabilityDuration { get; } = new ObservableValue<int>();
+    public ObservableValue<int> Thorns { get; } = new ObservableValue<int>();
 
     public bool HasDied { get; private set; } = false;
 
@@ -55,8 +56,8 @@ public class Character : ScriptableObject, ICharacter
         Block.Value = 0;
         WeaknessDuration.Value = 0;
         VulnerabilityDuration.Value = 0;
+        Thorns.Value = 0;
         RecomputeStats();
-        HP.Value = MaxHP.Value;
     }
 
     public void RecomputeStats()
@@ -69,7 +70,6 @@ public class Character : ScriptableObject, ICharacter
     /// <summary>
     /// Apply finalized damage to HP. Vulnerability and Block are already accounted for upstream
     /// by AttackService.DealDamage. This just decrements HP and fires events.
-    /// Both events can fire on a fatal hit so visual hit-feedback still plays on the killing blow.
     /// </summary>
     public void ApplyDamage(int damageAmount)
     {

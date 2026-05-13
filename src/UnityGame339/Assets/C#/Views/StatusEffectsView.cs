@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Shows badges for active status effects on a Character (Block, Weakness, Vulnerability).
+/// Shows badges for active status effects on a Character: Block, Weakness, Vulnerability, Thorns.
 /// Each badge is a GameObject the script enables/disables based on whether the value is > 0,
 /// plus a TMP text the script writes the current value/duration into.
 /// The block badge's icon Image flashes blue briefly when block is consumed.
@@ -27,6 +27,10 @@ public class StatusEffectsView : TypedView<Character>
     [SerializeField] private GameObject _vulnerabilityBadge;
     [SerializeField] private TextMeshProUGUI _vulnerabilityValueText;
 
+    [Header("Thorns")]
+    [SerializeField] private GameObject _thornsBadge;
+    [SerializeField] private TextMeshProUGUI _thornsValueText;
+
     private Character _character;
     private int _lastBlockValue;
     private Coroutine _blockFlashCoroutine;
@@ -36,20 +40,19 @@ public class StatusEffectsView : TypedView<Character>
     {
         _character = character[0];
 
-        // Cache base color so the flash returns to the original tint.
         if (_blockBadgeIcon != null) _blockBadgeBaseColor = _blockBadgeIcon.color;
 
-        // Snapshot BEFORE subscribing so the snapshot itself isn't treated as a change.
         _lastBlockValue = _character.Block.Value;
 
         _character.Block.ChangeEvent += OnBlockChange;
         _character.WeaknessDuration.ChangeEvent += OnWeaknessChange;
         _character.VulnerabilityDuration.ChangeEvent += OnVulnerabilityChange;
+        _character.Thorns.ChangeEvent += OnThornsChange;
 
-        // Apply current values without animation.
         SetBadge(_blockBadge, _blockValueText, _character.Block.Value);
         SetBadge(_weaknessBadge, _weaknessValueText, _character.WeaknessDuration.Value);
         SetBadge(_vulnerabilityBadge, _vulnerabilityValueText, _character.VulnerabilityDuration.Value);
+        SetBadge(_thornsBadge, _thornsValueText, _character.Thorns.Value);
     }
 
     protected override void DeinitializeView()
@@ -59,6 +62,7 @@ public class StatusEffectsView : TypedView<Character>
             _character.Block.ChangeEvent -= OnBlockChange;
             _character.WeaknessDuration.ChangeEvent -= OnWeaknessChange;
             _character.VulnerabilityDuration.ChangeEvent -= OnVulnerabilityChange;
+            _character.Thorns.ChangeEvent -= OnThornsChange;
         }
         _character = null;
 
@@ -72,6 +76,7 @@ public class StatusEffectsView : TypedView<Character>
         if (_blockBadge != null) _blockBadge.SetActive(false);
         if (_weaknessBadge != null) _weaknessBadge.SetActive(false);
         if (_vulnerabilityBadge != null) _vulnerabilityBadge.SetActive(false);
+        if (_thornsBadge != null) _thornsBadge.SetActive(false);
     }
 
     private void OnBlockChange(int value)
@@ -96,6 +101,11 @@ public class StatusEffectsView : TypedView<Character>
     private void OnVulnerabilityChange(int value)
     {
         SetBadge(_vulnerabilityBadge, _vulnerabilityValueText, value);
+    }
+
+    private void OnThornsChange(int value)
+    {
+        SetBadge(_thornsBadge, _thornsValueText, value);
     }
 
     private static void SetBadge(GameObject badge, TextMeshProUGUI text, int value)

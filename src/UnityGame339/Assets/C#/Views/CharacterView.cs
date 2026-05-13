@@ -32,6 +32,8 @@ public class CharacterView : TypedView<Character>
     [SerializeField] private Color _blockColor = new Color(0.3f, 0.7f, 1f);
     [SerializeField] private Color _weaknessColor = new Color(0.7f, 0.85f, 1f);
     [SerializeField] private Color _vulnerabilityColor = new Color(1f, 0.7f, 0.7f);
+    [Tooltip("Used for the thorns-gain floating number. Dark green by default to distinguish from heal.")]
+    [SerializeField] private Color _thornsColor = new Color(0.1f, 0.45f, 0.2f);
 
     [Header("Floating Numbers")]
     [SerializeField] private RectTransform _floatingNumbersContainer;
@@ -40,7 +42,6 @@ public class CharacterView : TypedView<Character>
     private Character _character;
     private Coroutine _hitFeedbackCoroutine;
 
-    // Body + equipped-limb images, captured with each one's base color so flashes return cleanly.
     private struct FlashTarget
     {
         public Image image;
@@ -48,11 +49,11 @@ public class CharacterView : TypedView<Character>
     }
     private readonly List<FlashTarget> _flashTargets = new List<FlashTarget>();
 
-    // Delta tracking — set in InitializeView, updated on each change event.
     private int _lastHP;
     private int _lastBlock;
     private int _lastWeakness;
     private int _lastVulnerability;
+    private int _lastThorns;
     
     protected override void InitializeView(Character[] character)
     {
@@ -66,12 +67,14 @@ public class CharacterView : TypedView<Character>
         _lastBlock = _character.Block.Value;
         _lastWeakness = _character.WeaknessDuration.Value;
         _lastVulnerability = _character.VulnerabilityDuration.Value;
+        _lastThorns = _character.Thorns.Value;
 
         _character.OnCharacterTakeDamage += OnTakeDamage;
         _character.HP.ChangeEvent += OnHPChange;
         _character.Block.ChangeEvent += OnBlockChange;
         _character.WeaknessDuration.ChangeEvent += OnWeaknessChange;
         _character.VulnerabilityDuration.ChangeEvent += OnVulnerabilityChange;
+        _character.Thorns.ChangeEvent += OnThornsChange;
 
         _healthView.Initialize(character);
         if (_statusEffectsView != null) _statusEffectsView.Initialize(character);
@@ -86,6 +89,7 @@ public class CharacterView : TypedView<Character>
             _character.Block.ChangeEvent -= OnBlockChange;
             _character.WeaknessDuration.ChangeEvent -= OnWeaknessChange;
             _character.VulnerabilityDuration.ChangeEvent -= OnVulnerabilityChange;
+            _character.Thorns.ChangeEvent -= OnThornsChange;
         }
         _character = null;
 
@@ -95,7 +99,6 @@ public class CharacterView : TypedView<Character>
             _hitFeedbackCoroutine = null;
         }
 
-        // Restore each target's original color in case a flash was mid-animation.
         foreach (FlashTarget target in _flashTargets)
         {
             if (target.image != null) target.image.color = target.baseColor;
@@ -120,10 +123,6 @@ public class CharacterView : TypedView<Character>
 
     //===== Limbs =====
 
-    /// <summary>
-    /// Pull current limb icons from the character's loadout. Called automatically on init.
-    /// Call manually if the loadout changes mid-battle (currently it doesn't — upgrades happen between fights).
-    /// </summary>
     public void RefreshLimbs(Character character)
     {
         if (character == null) return;
@@ -158,7 +157,6 @@ public class CharacterView : TypedView<Character>
         if (_characterImage != null)
             _flashTargets.Add(new FlashTarget { image = _characterImage, baseColor = _characterImage.color });
 
-        // Only flash limb images that are actually displaying something.
         TryAddLimbTarget(_arm1Icon);
         TryAddLimbTarget(_arm2Icon);
         TryAddLimbTarget(_leg1Icon);
@@ -171,7 +169,7 @@ public class CharacterView : TypedView<Character>
             _flashTargets.Add(new FlashTarget { image = limb, baseColor = limb.color });
     }
 
-    //===== Glow (toggled by TurnIndicatorView) =====
+    //===== Glow =====
 
     public void SetGlow(bool active)
     {
@@ -228,6 +226,17 @@ public class CharacterView : TypedView<Character>
         if (delta > 0) PlayFlash(_vulnerabilityColor, withTilt: false);
     }
 
+    private void OnThornsChange(int newValue)
+    {
+        int delta = newValue - _lastThorns;
+        _lastThorns = newValue;
+        if (delta > 0)
+        {
+            SpawnFloatingNumber($"+{delta}", _thornsColor);
+            // No character flash on thorns gain per spec — the floating number + badge update carry the feedback.
+        }
+    }
+
     //===== Public manual triggers =====
 
     public void PlayDamageFlash() => PlayFlash(_damageColor, withTilt: true);
@@ -251,8 +260,6 @@ public class CharacterView : TypedView<Character>
         Transform t = _characterImage.transform;
         float half = _hitFeedbackDuration * 0.5f;
 
-        // Outgoing: lerp every target's color toward flash color. Tilt is applied to the body
-        // only — limbs follow because they're transform children.
         float elapsed = 0;
         while (elapsed < half)
         {
@@ -279,7 +286,6 @@ public class CharacterView : TypedView<Character>
             yield return null;
         }
 
-        // Snap-back so any small leftover from lerp imprecision is cleaned up.
         foreach (FlashTarget target in _flashTargets)
         {
             if (target.image != null) target.image.color = target.baseColor;
