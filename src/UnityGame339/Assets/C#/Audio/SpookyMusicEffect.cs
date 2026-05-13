@@ -1,8 +1,7 @@
 using Game.Runtime;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-// Progressively applies spooky audio effects to the BGM
-// based on how many encounters the player has completed
 [RequireComponent(typeof(AudioSource))]
 public class SpookyMusicEffect : MonoBehaviour
 {
@@ -25,36 +24,27 @@ public class SpookyMusicEffect : MonoBehaviour
     [SerializeField] private float _maxChorusRate  = 1.2f;
 
     [Header("Pitch Wobble")]
-    [SerializeField] private float _maxWobbleAmount    = 0.04f;
-    [SerializeField] private float _wobbleFrequency    = 0.4f;
+    [SerializeField] private float _maxWobbleAmount = 0.04f;
+    [SerializeField] private float _wobbleFrequency = 0.4f;
 
     // Audio filters
-    private AudioSource             _audioSource;
-    private AudioLowPassFilter      _lowPass;
-    private AudioDistortionFilter   _distortion;
-    private AudioChorusFilter       _chorus;
+    private AudioSource           _audioSource;
+    private AudioLowPassFilter    _lowPass;
+    private AudioDistortionFilter _distortion;
+    private AudioChorusFilter     _chorus;
 
     // State
-    private TurnEngine  _turnEngine;
-    private float       _targetSpookiness;
-    private float       _currentSpookiness;
-    private float       _basePitch;
-    private int _totalEncounters = 0;
-    
-    private void OnEncounterEnd(bool isPlayerWin)
-    {
-        if (!isPlayerWin) return; // only count wins, losses don't progress spookiness
-        _totalEncounters++;
-        float t = Mathf.Clamp01((float)_totalEncounters / _encountersToMaxSpook);
-        _targetSpookiness = _spookinessCurve.Evaluate(t);
-    }
+    private TurnEngine _turnEngine;
+    private float      _targetSpookiness;
+    private float      _currentSpookiness;
+    private float      _basePitch;
+    private int        _totalEncounters = 0;
 
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
         _basePitch   = _audioSource.pitch;
 
-        // Attach filters — start neutral / disabled
         _lowPass = gameObject.AddComponent<AudioLowPassFilter>();
         _lowPass.cutoffFrequency = _normalCutoff;
 
@@ -66,8 +56,12 @@ public class SpookyMusicEffect : MonoBehaviour
         _chorus.depth   = 0f;
         _chorus.rate    = 0f;
         _chorus.enabled = false;
-        _turnEngine.EncounterEnd += OnEncounterEnd;
+    }
+
+    private void Start()
+    {
         _turnEngine = ServiceResolver.Resolve<TurnEngine>();
+        _turnEngine.EncounterEnd += OnEncounterEnd;
     }
 
     private void OnDestroy()
@@ -76,9 +70,11 @@ public class SpookyMusicEffect : MonoBehaviour
             _turnEngine.EncounterEnd -= OnEncounterEnd;
     }
 
-    private void OnEncountersChanged(int encounters)
+    private void OnEncounterEnd(bool isPlayerWin)
     {
-        float t = Mathf.Clamp01((float)encounters / _encountersToMaxSpook);
+        if (!isPlayerWin) return;
+        _totalEncounters++;
+        float t = Mathf.Clamp01((float)_totalEncounters / _encountersToMaxSpook);
         _targetSpookiness = _spookinessCurve.Evaluate(t);
     }
 
@@ -90,21 +86,21 @@ public class SpookyMusicEffect : MonoBehaviour
             Time.deltaTime / _transitionDuration
         );
 
+        if (Keyboard.current.tKey.wasPressedThisFrame)
+        {
+            _targetSpookiness = 1f;
+            _currentSpookiness = 1f;
+        }
+
         bool isActive = _currentSpookiness > 0.01f;
         _distortion.enabled = isActive;
         _chorus.enabled     = isActive;
 
-        // Low pass
-        _lowPass.cutoffFrequency = Mathf.Lerp(_normalCutoff, _spookyCutoff, _currentSpookiness);
-
-        // Distortion
+        _lowPass.cutoffFrequency    = Mathf.Lerp(_normalCutoff, _spookyCutoff, _currentSpookiness);
         _distortion.distortionLevel = Mathf.Lerp(0f, _maxDistortion, _currentSpookiness);
+        _chorus.depth               = Mathf.Lerp(0f, _maxChorusDepth, _currentSpookiness);
+        _chorus.rate                = Mathf.Lerp(0f, _maxChorusRate, _currentSpookiness);
 
-        // Chorus
-        _chorus.depth = Mathf.Lerp(0f, _maxChorusDepth, _currentSpookiness);
-        _chorus.rate  = Mathf.Lerp(0f, _maxChorusRate,  _currentSpookiness);
-
-        // Pitch wobble
         _audioSource.pitch = isActive
             ? _basePitch + Mathf.Sin(Time.time * _wobbleFrequency * (1f + _currentSpookiness * 2f))
                            * _maxWobbleAmount * _currentSpookiness
