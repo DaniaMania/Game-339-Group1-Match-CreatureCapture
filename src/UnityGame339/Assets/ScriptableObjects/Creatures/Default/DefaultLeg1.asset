@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BodyPart
   partName: Unnamed Part
   partType: 1
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: cb331d9dc5b28ed4faf544f0275a754f, type: 3}
   maxHPModifier: 0
   attackModifier: 0
   abilityName: 

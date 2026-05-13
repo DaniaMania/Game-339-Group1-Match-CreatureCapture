@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BodyPart
   partName: Dog Arm
   partType: 0
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f26ad940d99311b4f94092f1b148e997, type: 3}
   maxHPModifier: 10
   attackModifier: 0
   abilityName: Rabies

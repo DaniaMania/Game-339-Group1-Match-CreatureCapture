@@ -1,19 +1,25 @@
 using System.Collections;
+using System.Collections.Generic;
 using Game.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CharacterView : TypedView<Character>
 {
-    [Header("Values")]
+    [Header("Body")]
     [SerializeField] private Image _characterImage;
+
+    [Header("Limbs (parent these under the body image so they inherit hit-feedback tilt)")]
+    [SerializeField] private Image _arm1Icon;
+    [SerializeField] private Image _arm2Icon;
+    [SerializeField] private Image _leg1Icon;
+    [SerializeField] private Image _leg2Icon;
     
     [Header("Sub-views")]
     [SerializeField] private HealthView _healthView;
     [SerializeField] private StatusEffectsView _statusEffectsView;
 
     [Header("Glow (driven by TurnIndicatorView)")]
-    [Tooltip("A child GameObject (outline, aura, halo, etc.) that gets activated on this character's turn.")]
     [SerializeField] private GameObject _glowObject;
 
     [Header("Hit Feedback Animation")]
@@ -33,7 +39,14 @@ public class CharacterView : TypedView<Character>
 
     private Character _character;
     private Coroutine _hitFeedbackCoroutine;
-    private Color _baseColor = Color.white;
+
+    // Body + equipped-limb images, captured with each one's base color so flashes return cleanly.
+    private struct FlashTarget
+    {
+        public Image image;
+        public Color baseColor;
+    }
+    private readonly List<FlashTarget> _flashTargets = new List<FlashTarget>();
 
     // Delta tracking — set in InitializeView, updated on each change event.
     private int _lastHP;
@@ -45,9 +58,10 @@ public class CharacterView : TypedView<Character>
     {
         _character = character[0];
         _characterImage.sprite = _character.Icon;
-        _baseColor = _characterImage.color;
 
-        // Snapshot current values BEFORE subscribing so the snapshot itself doesn't trigger feedback.
+        RefreshLimbs(_character);
+        BuildFlashTargets();
+
         _lastHP = _character.HP.Value;
         _lastBlock = _character.Block.Value;
         _lastWeakness = _character.WeaknessDuration.Value;
@@ -80,17 +94,81 @@ public class CharacterView : TypedView<Character>
             StopCoroutine(_hitFeedbackCoroutine);
             _hitFeedbackCoroutine = null;
         }
+
+        // Restore each target's original color in case a flash was mid-animation.
+        foreach (FlashTarget target in _flashTargets)
+        {
+            if (target.image != null) target.image.color = target.baseColor;
+        }
+        _flashTargets.Clear();
+
         if (_characterImage)
         {
-            _characterImage.color = _baseColor;
             _characterImage.transform.localEulerAngles = Vector3.zero;
             _characterImage.sprite = null;
         }
+        ClearLimbDisplay(_arm1Icon);
+        ClearLimbDisplay(_arm2Icon);
+        ClearLimbDisplay(_leg1Icon);
+        ClearLimbDisplay(_leg2Icon);
 
         SetGlow(false);
 
         _healthView.Deinitialize();
         if (_statusEffectsView != null) _statusEffectsView.Deinitialize();
+    }
+
+    //===== Limbs =====
+
+    /// <summary>
+    /// Pull current limb icons from the character's loadout. Called automatically on init.
+    /// Call manually if the loadout changes mid-battle (currently it doesn't — upgrades happen between fights).
+    /// </summary>
+    public void RefreshLimbs(Character character)
+    {
+        if (character == null) return;
+        BodyPart[] arms = character.Loadout != null ? character.Loadout.arms : null;
+        BodyPart[] legs = character.Loadout != null ? character.Loadout.legs : null;
+
+        SetLimb(_arm1Icon, arms, 0);
+        SetLimb(_arm2Icon, arms, 1);
+        SetLimb(_leg1Icon, legs, 0);
+        SetLimb(_leg2Icon, legs, 1);
+    }
+
+    private static void SetLimb(Image img, BodyPart[] source, int index)
+    {
+        if (img == null) return;
+        BodyPart part = (source != null && index >= 0 && index < source.Length) ? source[index] : null;
+        bool hasIcon = part != null && part.icon != null;
+        img.enabled = hasIcon;
+        if (hasIcon) img.sprite = part.icon;
+    }
+
+    private static void ClearLimbDisplay(Image img)
+    {
+        if (img == null) return;
+        img.sprite = null;
+        img.enabled = false;
+    }
+
+    private void BuildFlashTargets()
+    {
+        _flashTargets.Clear();
+        if (_characterImage != null)
+            _flashTargets.Add(new FlashTarget { image = _characterImage, baseColor = _characterImage.color });
+
+        // Only flash limb images that are actually displaying something.
+        TryAddLimbTarget(_arm1Icon);
+        TryAddLimbTarget(_arm2Icon);
+        TryAddLimbTarget(_leg1Icon);
+        TryAddLimbTarget(_leg2Icon);
+    }
+
+    private void TryAddLimbTarget(Image limb)
+    {
+        if (limb != null && limb.enabled)
+            _flashTargets.Add(new FlashTarget { image = limb, baseColor = limb.color });
     }
 
     //===== Glow (toggled by TurnIndicatorView) =====
@@ -173,12 +251,17 @@ public class CharacterView : TypedView<Character>
         Transform t = _characterImage.transform;
         float half = _hitFeedbackDuration * 0.5f;
 
+        // Outgoing: lerp every target's color toward flash color. Tilt is applied to the body
+        // only — limbs follow because they're transform children.
         float elapsed = 0;
         while (elapsed < half)
         {
             elapsed += Time.deltaTime;
             float p = Mathf.Clamp01(elapsed / half);
-            _characterImage.color = Color.Lerp(_baseColor, color, p);
+            foreach (FlashTarget target in _flashTargets)
+            {
+                if (target.image != null) target.image.color = Color.Lerp(target.baseColor, color, p);
+            }
             if (withTilt) t.localEulerAngles = new Vector3(0, 0, Mathf.Lerp(0f, -_hitTiltAngle, p));
             yield return null;
         }
@@ -188,12 +271,19 @@ public class CharacterView : TypedView<Character>
         {
             elapsed += Time.deltaTime;
             float p = Mathf.Clamp01(elapsed / half);
-            _characterImage.color = Color.Lerp(color, _baseColor, p);
+            foreach (FlashTarget target in _flashTargets)
+            {
+                if (target.image != null) target.image.color = Color.Lerp(color, target.baseColor, p);
+            }
             if (withTilt) t.localEulerAngles = new Vector3(0, 0, Mathf.Lerp(-_hitTiltAngle, 0f, p));
             yield return null;
         }
 
-        _characterImage.color = _baseColor;
+        // Snap-back so any small leftover from lerp imprecision is cleaned up.
+        foreach (FlashTarget target in _flashTargets)
+        {
+            if (target.image != null) target.image.color = target.baseColor;
+        }
         t.localEulerAngles = Vector3.zero;
         _hitFeedbackCoroutine = null;
     }
