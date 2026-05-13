@@ -5,7 +5,7 @@ using Game339.Shared.DependencyInjection;
 using UnityEngine;
 
 /// <summary>
-/// Drives the new body-part upgrade flow:
+/// Drives the body-part upgrade flow:
 ///   EncounterEnd (win) → pick random arm + leg drops from defeated enemy →
 ///   show upgrade screen → player picks an offer → player picks a slot →
 ///   confirmation modal → confirm commits, back returns → BeginNewEncounter.
@@ -19,7 +19,6 @@ public class UpgradeController : GameController
 
     private Character _lastEnemy;
 
-    // Offer + selection state (controller-internal — view no longer reflects it visually).
     private BodyPart _offeredArm;
     private BodyPart _offeredLeg;
     private BodyPart _selectedOffer;
@@ -70,7 +69,7 @@ public class UpgradeController : GameController
 
         _selectedOffer = null;
 
-        _upgradeView.DisplayOffers(_offeredArm, _offeredLeg);
+        _upgradeView.DisplayOffers(_offeredArm, _offeredLeg, Player);
         _upgradeView.PopulateCreaturePreview(Player);
         _upgradeView.DisableAllSlots();
         _upgradeView.HideConfirmation();
@@ -135,7 +134,7 @@ public class UpgradeController : GameController
         if (index < 0 || index >= slots.Length) return;
         BodyPart oldPart = slots[index];
 
-        _upgradeView.ShowConfirmation(oldPart, _selectedOffer);
+        _upgradeView.ShowConfirmation(oldPart, _selectedOffer, Player);
         _upgradeView.DisableAllSlots();
 
         var (maxHP, attack) = ComputeSwapResult(_selectedOffer, type, index);

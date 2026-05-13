@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 183737f2efaca07498080745ade4cd6f, type: 3}
   m_Name: DefaultLeg2
   m_EditorClassIdentifier: Assembly-CSharp::BodyPart
-  partName: Unnamed Part
+  partName: Dog Leg
   partType: 1
   icon: {fileID: 21300000, guid: cb331d9dc5b28ed4faf544f0275a754f, type: 3}
   maxHPModifier: 0

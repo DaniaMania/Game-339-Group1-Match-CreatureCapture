@@ -76,10 +76,10 @@ public class UpgradeView : TypedView<UpgradeController>, IGamePanel
 
     //===== Display methods (called by controller) =====
 
-    public void DisplayOffers(BodyPart armOffer, BodyPart legOffer)
+    public void DisplayOffers(BodyPart armOffer, BodyPart legOffer, Character owner)
     {
-        _offeredArmUI.Populate(armOffer);
-        _offeredLegUI.Populate(legOffer);
+        _offeredArmUI.Populate(armOffer, owner);
+        _offeredLegUI.Populate(legOffer, owner);
     }
 
     public void PopulateCreaturePreview(Character player)
@@ -97,9 +97,9 @@ public class UpgradeView : TypedView<UpgradeController>, IGamePanel
         _creaturePreviewUI.DisableAllSlots();
     }
 
-    public void ShowConfirmation(BodyPart oldPart, BodyPart newPart)
+    public void ShowConfirmation(BodyPart oldPart, BodyPart newPart, Character owner)
     {
-        _confirmationUI.Show(oldPart, newPart);
+        _confirmationUI.Show(oldPart, newPart, owner);
     }
 
     public void HideConfirmation()

@@ -4,8 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Modal overlay that appears after the player selects a slot to swap into.
-/// Shows old limb on one side, arrow, new limb on the other side, with name + info under each icon.
+/// Modal overlay shown after the player picks a slot to swap into.
+/// Per side: icon, part name, skill name (ability for arms / passive for legs),
+/// computed effect, cooldown (if applicable), description + stat mods.
+/// Mirrors the in-battle tooltip's text structure.
 /// Confirm commits the swap; Back returns to slot-selection.
 /// </summary>
 public class UpgradeConfirmationUI : MonoBehaviour
@@ -16,12 +18,18 @@ public class UpgradeConfirmationUI : MonoBehaviour
     [Header("Old Limb")]
     [SerializeField] private Image _oldIcon;
     [SerializeField] private TextMeshProUGUI _oldNameLabel;
-    [SerializeField] private TextMeshProUGUI _oldInfoLabel;
+    [SerializeField] private TextMeshProUGUI _oldSkillNameLabel;
+    [SerializeField] private TextMeshProUGUI _oldEffectLabel;
+    [SerializeField] private TextMeshProUGUI _oldCooldownLabel;
+    [SerializeField] private TextMeshProUGUI _oldDescriptionLabel;
 
     [Header("New Limb")]
     [SerializeField] private Image _newIcon;
     [SerializeField] private TextMeshProUGUI _newNameLabel;
-    [SerializeField] private TextMeshProUGUI _newInfoLabel;
+    [SerializeField] private TextMeshProUGUI _newSkillNameLabel;
+    [SerializeField] private TextMeshProUGUI _newEffectLabel;
+    [SerializeField] private TextMeshProUGUI _newCooldownLabel;
+    [SerializeField] private TextMeshProUGUI _newDescriptionLabel;
 
     [Header("Buttons")]
     [SerializeField] private Button _confirmButton;
@@ -37,10 +45,13 @@ public class UpgradeConfirmationUI : MonoBehaviour
         SetVisible(false);
     }
 
-    public void Show(BodyPart oldPart, BodyPart newPart)
+    /// <summary>
+    /// owner is the character whose stats are used to compute attack-scaling effect text (typically the player).
+    /// </summary>
+    public void Show(BodyPart oldPart, BodyPart newPart, Character owner)
     {
-        PopulateSide(_oldIcon, _oldNameLabel, _oldInfoLabel, oldPart);
-        PopulateSide(_newIcon, _newNameLabel, _newInfoLabel, newPart);
+        PopulateSide(_oldIcon, _oldNameLabel, _oldSkillNameLabel, _oldEffectLabel, _oldCooldownLabel, _oldDescriptionLabel, oldPart, owner);
+        PopulateSide(_newIcon, _newNameLabel, _newSkillNameLabel, _newEffectLabel, _newCooldownLabel, _newDescriptionLabel, newPart, owner);
         SetVisible(true);
     }
 
@@ -49,13 +60,24 @@ public class UpgradeConfirmationUI : MonoBehaviour
         SetVisible(false);
     }
 
-    private static void PopulateSide(Image icon, TextMeshProUGUI nameLabel, TextMeshProUGUI infoLabel, BodyPart part)
+    private static void PopulateSide(
+        Image icon,
+        TextMeshProUGUI nameLabel,
+        TextMeshProUGUI skillNameLabel,
+        TextMeshProUGUI effectLabel,
+        TextMeshProUGUI cooldownLabel,
+        TextMeshProUGUI descriptionLabel,
+        BodyPart part,
+        Character owner)
     {
         if (part == null)
         {
             if (icon != null) icon.enabled = false;
             if (nameLabel != null) nameLabel.text = "(empty)";
-            if (infoLabel != null) infoLabel.text = "";
+            if (skillNameLabel != null) skillNameLabel.text = "";
+            if (effectLabel != null) effectLabel.text = "";
+            if (cooldownLabel != null) cooldownLabel.gameObject.SetActive(false);
+            if (descriptionLabel != null) descriptionLabel.text = "";
             return;
         }
 
@@ -65,13 +87,20 @@ public class UpgradeConfirmationUI : MonoBehaviour
             icon.enabled = hasIcon;
             if (hasIcon) icon.sprite = part.icon;
         }
+
         if (nameLabel != null) nameLabel.text = part.partName;
-        if (infoLabel != null)
+        if (skillNameLabel != null) skillNameLabel.text = BodyPartFormatter.FormatSubheading(part);
+        if (effectLabel != null) effectLabel.text = BodyPartFormatter.FormatEffect(part, owner);
+
+        if (cooldownLabel != null)
         {
-            string subheading = BodyPartFormatter.FormatSubheading(part);
-            string info = BodyPartFormatter.FormatPartInfo(part);
-            infoLabel.text = string.IsNullOrEmpty(subheading) ? info : $"{subheading}\n{info}";
+            string cooldownText = BodyPartFormatter.FormatCooldown(part);
+            bool hasCooldown = !string.IsNullOrEmpty(cooldownText);
+            cooldownLabel.gameObject.SetActive(hasCooldown);
+            if (hasCooldown) cooldownLabel.text = cooldownText;
         }
+
+        if (descriptionLabel != null) descriptionLabel.text = BodyPartFormatter.FormatPartInfo(part);
     }
 
     private void SetVisible(bool visible)
