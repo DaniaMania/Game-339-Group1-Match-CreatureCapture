@@ -19,7 +19,7 @@ public class EncounterManager : ObserverMonoBehaviour
       }
    }
    #endregion
-
+   
    private TurnEngine _turnEngine = ServiceResolver.Resolve<TurnEngine>();
 
    protected override void Subscribe()
@@ -87,9 +87,12 @@ public class EncounterManager : ObserverMonoBehaviour
    }
 
    //===== Other =====
+   
+   [SerializeField] private bool _autoStart = false; // title screen handles start now
    private new IEnumerator Start()
    {
       base.Start();
+      if (!_autoStart) yield break;
       
       yield return new WaitForSeconds(1f);
       BeginNewEncounter();
