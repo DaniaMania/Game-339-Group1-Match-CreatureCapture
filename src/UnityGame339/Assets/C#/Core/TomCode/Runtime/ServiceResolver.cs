@@ -26,6 +26,9 @@ namespace Game.Runtime
 
             TurnEngine turnEngine = new TurnEngine();
             container.RegisterSingletonInstance(turnEngine);
+            
+            var audioService = new AudioService();
+            container.RegisterSingletonInstance(audioService);
 
             return container;
         });
