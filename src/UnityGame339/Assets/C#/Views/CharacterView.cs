@@ -1,19 +1,25 @@
 using System.Collections;
+using System.Collections.Generic;
 using Game.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CharacterView : TypedView<Character>
 {
-    [Header("Values")]
+    [Header("Body")]
     [SerializeField] private Image _characterImage;
+
+    [Header("Limbs (parent these under the body image so they inherit hit-feedback tilt)")]
+    [SerializeField] private Image _arm1Icon;
+    [SerializeField] private Image _arm2Icon;
+    [SerializeField] private Image _leg1Icon;
+    [SerializeField] private Image _leg2Icon;
     
     [Header("Sub-views")]
     [SerializeField] private HealthView _healthView;
     [SerializeField] private StatusEffectsView _statusEffectsView;
 
     [Header("Glow (driven by TurnIndicatorView)")]
-    [Tooltip("A child GameObject (outline, aura, halo, etc.) that gets activated on this character's turn.")]
     [SerializeField] private GameObject _glowObject;
 
     [Header("Hit Feedback Animation")]
@@ -26,6 +32,8 @@ public class CharacterView : TypedView<Character>
     [SerializeField] private Color _blockColor = new Color(0.3f, 0.7f, 1f);
     [SerializeField] private Color _weaknessColor = new Color(0.7f, 0.85f, 1f);
     [SerializeField] private Color _vulnerabilityColor = new Color(1f, 0.7f, 0.7f);
+    [Tooltip("Used for the thorns-gain floating number. Dark green by default to distinguish from heal.")]
+    [SerializeField] private Color _thornsColor = new Color(0.1f, 0.45f, 0.2f);
 
     [Header("Floating Numbers")]
     [SerializeField] private RectTransform _floatingNumbersContainer;
@@ -33,31 +41,40 @@ public class CharacterView : TypedView<Character>
 
     private Character _character;
     private Coroutine _hitFeedbackCoroutine;
-    private Color _baseColor = Color.white;
 
-    // Delta tracking — set in InitializeView, updated on each change event.
+    private struct FlashTarget
+    {
+        public Image image;
+        public Color baseColor;
+    }
+    private readonly List<FlashTarget> _flashTargets = new List<FlashTarget>();
+
     private int _lastHP;
     private int _lastBlock;
     private int _lastWeakness;
     private int _lastVulnerability;
+    private int _lastThorns;
     
     protected override void InitializeView(Character[] character)
     {
         _character = character[0];
         _characterImage.sprite = _character.Icon;
-        _baseColor = _characterImage.color;
 
-        // Snapshot current values BEFORE subscribing so the snapshot itself doesn't trigger feedback.
+        RefreshLimbs(_character);
+        BuildFlashTargets();
+
         _lastHP = _character.HP.Value;
         _lastBlock = _character.Block.Value;
         _lastWeakness = _character.WeaknessDuration.Value;
         _lastVulnerability = _character.VulnerabilityDuration.Value;
+        _lastThorns = _character.Thorns.Value;
 
         _character.OnCharacterTakeDamage += OnTakeDamage;
         _character.HP.ChangeEvent += OnHPChange;
         _character.Block.ChangeEvent += OnBlockChange;
         _character.WeaknessDuration.ChangeEvent += OnWeaknessChange;
         _character.VulnerabilityDuration.ChangeEvent += OnVulnerabilityChange;
+        _character.Thorns.ChangeEvent += OnThornsChange;
 
         _healthView.Initialize(character);
         if (_statusEffectsView != null) _statusEffectsView.Initialize(character);
@@ -72,6 +89,7 @@ public class CharacterView : TypedView<Character>
             _character.Block.ChangeEvent -= OnBlockChange;
             _character.WeaknessDuration.ChangeEvent -= OnWeaknessChange;
             _character.VulnerabilityDuration.ChangeEvent -= OnVulnerabilityChange;
+            _character.Thorns.ChangeEvent -= OnThornsChange;
         }
         _character = null;
 
@@ -80,12 +98,22 @@ public class CharacterView : TypedView<Character>
             StopCoroutine(_hitFeedbackCoroutine);
             _hitFeedbackCoroutine = null;
         }
+
+        foreach (FlashTarget target in _flashTargets)
+        {
+            if (target.image != null) target.image.color = target.baseColor;
+        }
+        _flashTargets.Clear();
+
         if (_characterImage)
         {
-            _characterImage.color = _baseColor;
             _characterImage.transform.localEulerAngles = Vector3.zero;
             _characterImage.sprite = null;
         }
+        ClearLimbDisplay(_arm1Icon);
+        ClearLimbDisplay(_arm2Icon);
+        ClearLimbDisplay(_leg1Icon);
+        ClearLimbDisplay(_leg2Icon);
 
         SetGlow(false);
 
@@ -93,7 +121,55 @@ public class CharacterView : TypedView<Character>
         if (_statusEffectsView != null) _statusEffectsView.Deinitialize();
     }
 
-    //===== Glow (toggled by TurnIndicatorView) =====
+    //===== Limbs =====
+
+    public void RefreshLimbs(Character character)
+    {
+        if (character == null) return;
+        BodyPart[] arms = character.Loadout != null ? character.Loadout.arms : null;
+        BodyPart[] legs = character.Loadout != null ? character.Loadout.legs : null;
+
+        SetLimb(_arm1Icon, arms, 0);
+        SetLimb(_arm2Icon, arms, 1);
+        SetLimb(_leg1Icon, legs, 0);
+        SetLimb(_leg2Icon, legs, 1);
+    }
+
+    private static void SetLimb(Image img, BodyPart[] source, int index)
+    {
+        if (img == null) return;
+        BodyPart part = (source != null && index >= 0 && index < source.Length) ? source[index] : null;
+        bool hasIcon = part != null && part.icon != null;
+        img.enabled = hasIcon;
+        if (hasIcon) img.sprite = part.icon;
+    }
+
+    private static void ClearLimbDisplay(Image img)
+    {
+        if (img == null) return;
+        img.sprite = null;
+        img.enabled = false;
+    }
+
+    private void BuildFlashTargets()
+    {
+        _flashTargets.Clear();
+        if (_characterImage != null)
+            _flashTargets.Add(new FlashTarget { image = _characterImage, baseColor = _characterImage.color });
+
+        TryAddLimbTarget(_arm1Icon);
+        TryAddLimbTarget(_arm2Icon);
+        TryAddLimbTarget(_leg1Icon);
+        TryAddLimbTarget(_leg2Icon);
+    }
+
+    private void TryAddLimbTarget(Image limb)
+    {
+        if (limb != null && limb.enabled)
+            _flashTargets.Add(new FlashTarget { image = limb, baseColor = limb.color });
+    }
+
+    //===== Glow =====
 
     public void SetGlow(bool active)
     {
@@ -150,6 +226,17 @@ public class CharacterView : TypedView<Character>
         if (delta > 0) PlayFlash(_vulnerabilityColor, withTilt: false);
     }
 
+    private void OnThornsChange(int newValue)
+    {
+        int delta = newValue - _lastThorns;
+        _lastThorns = newValue;
+        if (delta > 0)
+        {
+            SpawnFloatingNumber($"+{delta}", _thornsColor);
+            // No character flash on thorns gain per spec — the floating number + badge update carry the feedback.
+        }
+    }
+
     //===== Public manual triggers =====
 
     public void PlayDamageFlash() => PlayFlash(_damageColor, withTilt: true);
@@ -178,7 +265,10 @@ public class CharacterView : TypedView<Character>
         {
             elapsed += Time.deltaTime;
             float p = Mathf.Clamp01(elapsed / half);
-            _characterImage.color = Color.Lerp(_baseColor, color, p);
+            foreach (FlashTarget target in _flashTargets)
+            {
+                if (target.image != null) target.image.color = Color.Lerp(target.baseColor, color, p);
+            }
             if (withTilt) t.localEulerAngles = new Vector3(0, 0, Mathf.Lerp(0f, -_hitTiltAngle, p));
             yield return null;
         }
@@ -188,12 +278,18 @@ public class CharacterView : TypedView<Character>
         {
             elapsed += Time.deltaTime;
             float p = Mathf.Clamp01(elapsed / half);
-            _characterImage.color = Color.Lerp(color, _baseColor, p);
+            foreach (FlashTarget target in _flashTargets)
+            {
+                if (target.image != null) target.image.color = Color.Lerp(color, target.baseColor, p);
+            }
             if (withTilt) t.localEulerAngles = new Vector3(0, 0, Mathf.Lerp(-_hitTiltAngle, 0f, p));
             yield return null;
         }
 
-        _characterImage.color = _baseColor;
+        foreach (FlashTarget target in _flashTargets)
+        {
+            if (target.image != null) target.image.color = target.baseColor;
+        }
         t.localEulerAngles = Vector3.zero;
         _hitFeedbackCoroutine = null;
     }

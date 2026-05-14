@@ -15,6 +15,6 @@ public class TitleController : MonoBehaviour
     {
         ServiceResolver.Resolve<IGameLog>().Info("[Title] Play Button Clicked");
         _titlePanel.SetActive(false);
-        EncounterManager.Instance.BeginNewEncounter();
+        EncounterManager.Instance.BeginNewEncounter(); 
     }
 }

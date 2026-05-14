@@ -6,6 +6,8 @@ using UnityEngine;
 public class PlayerController : BattleController
 {
     [SerializeField] private PlayerControllerView _playerControllerView;
+    [Tooltip("Required. Player input is gated on this controller's OnPassivePhaseComplete event so passives play out before the player acts.")]
+    [SerializeField] private PassivePhaseController _passivePhaseController;
 
     [Header("Multihit")]
     [Tooltip("Seconds of delay between hits of a multihit ability so they're individually visible.")]
@@ -24,18 +26,21 @@ public class PlayerController : BattleController
         for (int i = 0; i < _armCooldowns.Length; i++) _armCooldowns[i] = 0;
         _playerControllerView.RefreshArmCooldowns(_armCooldowns);
 
-        _turnEngine.PlayerTurnStart += OnPlayerTurnStart;
+        _passivePhaseController.OnPassivePhaseComplete += OnPassivePhaseComplete;
         _turnEngine.PlayerTurnEnd += OnPlayerTurnEnd;
     }
 
     protected override void EncounterEnd(bool isPlayerWin)
     {
         _playerControllerView.Deinitialize();
-        _turnEngine.PlayerTurnStart -= OnPlayerTurnStart;
+        _passivePhaseController.OnPassivePhaseComplete -= OnPassivePhaseComplete;
         _turnEngine.PlayerTurnEnd -= OnPlayerTurnEnd;
     }
 
-    private void OnPlayerTurnStart()
+    /// <summary>
+    /// Called after the passive phase finishes — at this point the player can act.
+    /// </summary>
+    private void OnPassivePhaseComplete()
     {
         IsInteractable.Value = true;
         _playerControllerView.RefreshArmCooldowns(_armCooldowns);
@@ -85,16 +90,10 @@ public class PlayerController : BattleController
             if (i < hits - 1) yield return new WaitForSeconds(_multihitDelay);
         }
 
-        // Store cooldownTurns + 1 so that the immediate tick at OnPlayerTurnEnd lands
-        // on cooldownTurns. That gives N full lockout turns matching the authored value.
-        // Skipped entirely when cooldownTurns is 0 so no-cooldown abilities don't show
-        // a "1" overlay flash before being ticked away.
         if (arm.cooldownTurns > 0)
         {
             _armCooldowns[armIndex] = arm.cooldownTurns + 1;
         }
-        // No RefreshArmCooldowns here — the post-tick refresh in OnPlayerTurnEnd will
-        // show the correct value, avoiding a brief flash of cooldownTurns+1 in the UI.
 
         End();
     }

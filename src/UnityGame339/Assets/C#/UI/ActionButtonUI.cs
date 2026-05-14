@@ -62,8 +62,8 @@ public class ActionButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         if (_sourcePart == null || _owner == null) return;
         if (TooltipUI.Instance == null) return;
 
-        string effect = BuildEffectText(_sourcePart, _owner);
-        string cooldownInfo = BuildCooldownText(_sourcePart, _currentCooldown);
+        string effect = BodyPartFormatter.FormatEffect(_sourcePart, _owner);
+        string cooldownInfo = BodyPartFormatter.FormatCooldown(_sourcePart, _currentCooldown);
 
         TooltipUI.Instance.Show(
             _sourcePart.abilityName,
@@ -78,69 +78,5 @@ public class ActionButtonUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         if (TooltipUI.Instance == null) return;
         TooltipUI.Instance.Hide();
-    }
-
-    private static string BuildEffectText(BodyPart part, Character owner)
-    {
-        int hits = Mathf.Max(1, part.abilityHits);
-        string effect;
-
-        switch (part.abilityType)
-        {
-            case AbilityType.Attack:
-            {
-                int perHit = owner.Attack.Value;
-                int total = perHit * hits;
-                effect = hits > 1
-                    ? $"Deal {perHit} damage x {hits} hits ({total} total)"
-                    : $"Deal {perHit} damage";
-                break;
-            }
-            case AbilityType.Heal:
-            {
-                int perHit = part.abilityValue;
-                int total = perHit * hits;
-                effect = hits > 1
-                    ? $"Heal {perHit} HP x {hits} ({total} total)"
-                    : $"Heal {perHit} HP";
-                break;
-            }
-            case AbilityType.Shield:
-            {
-                int perHit = part.abilityValue;
-                int total = perHit * hits;
-                effect = hits > 1
-                    ? $"Gain {perHit} block x {hits} ({total} total)"
-                    : $"Gain {perHit} block";
-                break;
-            }
-            case AbilityType.Weakness:
-            {
-                int totalDuration = part.abilityValue * hits;
-                effect = $"Apply Weakness for {totalDuration} turn(s) (-25% target attack)";
-                break;
-            }
-            case AbilityType.Vulnerability:
-            {
-                int totalDuration = part.abilityValue * hits;
-                effect = $"Apply Vulnerability for {totalDuration} turn(s) (+50% damage taken)";
-                break;
-            }
-            default:
-                effect = "Unknown ability";
-                break;
-        }
-
-        return effect;
-    }
-
-    private static string BuildCooldownText(BodyPart part, int currentCooldown)
-    {
-        if (part.cooldownTurns <= 0) return null;
-        if (currentCooldown > 0)
-        {
-            return $"Cooldown: {part.cooldownTurns} turns ({currentCooldown} remaining)";
-        }
-        return $"Cooldown: {part.cooldownTurns} turns";
     }
 }

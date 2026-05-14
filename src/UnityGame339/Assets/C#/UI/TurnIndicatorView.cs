@@ -4,11 +4,10 @@ using TMPro;
 using UnityEngine;
 
 /// <summary>
-/// Drives three pieces of turn-related UI:
+/// Drives turn-related UI:
 ///  1. A turn counter (increments at the start of each player turn).
-///  2. A "Player's Turn" / "Enemy's Turn" label at the top.
-///  3. A glow effect on whichever CharacterView is currently active.
-/// Inherits from Controller so it gets the standard subscribe lifecycle and a TurnEngine reference.
+///  2. A status label that cycles through "Passive Phase" → "Player's Turn" → "Enemy's Turn".
+///  3. A glow effect on whichever CharacterView is currently active (or off during passive phase).
 /// </summary>
 public class TurnIndicatorView : TypedView<CharacterView>
 {
@@ -17,9 +16,14 @@ public class TurnIndicatorView : TypedView<CharacterView>
     [Header("Labels")]
     [SerializeField] private TextMeshProUGUI _turnLabel;
     [SerializeField] private TextMeshProUGUI _turnCounterLabel;
-    
-    private CharacterView _playerView;
-    private CharacterView _enemyView;
+
+    [Header("Character Views (for glow)")]
+    [SerializeField] private CharacterView _playerView;
+    [SerializeField] private CharacterView _enemyView;
+
+    [Header("Passive Phase (optional — leave null to keep old turn-start behavior)")]
+    [SerializeField] private PassivePhaseController _passivePhaseController;
+    [SerializeField] private string _passivePhaseText = "Passive Phase";
 
     [Header("Text Formatting")]
     [SerializeField] private string _playerTurnText = "Player's Turn";
@@ -38,9 +42,13 @@ public class TurnIndicatorView : TypedView<CharacterView>
         _turnEngine.PlayerTurnStart += OnPlayerTurnStart;
         _turnEngine.PlayerTurnEnd += OnPlayerTurnEnd;
         _turnEngine.EncounterEnd += OnEncounterEnd;
-        
-        // The view may be enabled mid-game (e.g. enabled in the editor after Awake).
-        // Default state: clear labels and no glow until the next encounter starts.
+
+        if (_passivePhaseController != null)
+        {
+            _passivePhaseController.OnPassivePhaseStart += OnPassivePhaseStart;
+            _passivePhaseController.OnPassivePhaseComplete += OnPassivePhaseComplete;
+        }
+
         ClearAll();
     }
 
@@ -52,34 +60,51 @@ public class TurnIndicatorView : TypedView<CharacterView>
         _turnEngine.PlayerTurnStart -= OnPlayerTurnStart;
         _turnEngine.PlayerTurnEnd -= OnPlayerTurnEnd;
         _turnEngine.EncounterEnd -= OnEncounterEnd;
+
+        if (_passivePhaseController != null)
+        {
+            _passivePhaseController.OnPassivePhaseStart -= OnPassivePhaseStart;
+            _passivePhaseController.OnPassivePhaseComplete -= OnPassivePhaseComplete;
+        }
     }
 
     //===== Event handlers =====
 
     private void OnEncounterSetup(ICharacter player, ICharacter enemy)
     {
-        // Fresh encounter — the next PlayerTurnStart will be Turn 1.
         _turnNumber = 0;
-        UpdateTurnCounter();
-        SetTurnLabel("");
-        SetPlayerGlow(false);
-        SetEnemyGlow(false);
+        ClearAll();
     }
 
     private void OnPlayerTurnStart()
     {
         _turnNumber++;
         UpdateTurnCounter();
+
+        // If no PassivePhaseController is wired, fall back to old behavior: flip to player's turn immediately.
+        // Otherwise wait for OnPassivePhaseStart / OnPassivePhaseComplete.
+        if (_passivePhaseController == null)
+        {
+            SetTurnLabel(_playerTurnText);
+            SetPlayerGlow(true);
+            SetEnemyGlow(false);
+        }
+    }
+
+    private void OnPassivePhaseStart()
+    {
+        SetTurnLabel(_passivePhaseText);
+        SetPlayerGlow(false);
+        SetEnemyGlow(false);
+    }
+
+    private void OnPassivePhaseComplete()
+    {
         SetTurnLabel(_playerTurnText);
         SetPlayerGlow(true);
         SetEnemyGlow(false);
     }
 
-    /// <summary>
-    /// PlayerTurnEnd fires the instant before the enemy turn begins, so we use it as the
-    /// "enemy's turn starting" cue. (No separate EnemyTurnStart subscription needed — and
-    /// this works whether or not the engine exposes such an event.)
-    /// </summary>
     private void OnPlayerTurnEnd()
     {
         SetTurnLabel(_enemyTurnText);
@@ -89,26 +114,22 @@ public class TurnIndicatorView : TypedView<CharacterView>
 
     private void OnEncounterEnd(bool _)
     {
-        SetTurnLabel("");
-        SetPlayerGlow(false);
-        SetEnemyGlow(false);
+        ClearAll();
     }
 
     //===== Helpers =====
 
     private void ClearAll()
     {
-        _turnNumber = 0;
-        UpdateTurnCounter();
         SetTurnLabel("");
         SetPlayerGlow(false);
         SetEnemyGlow(false);
+        UpdateTurnCounter();
     }
 
     private void UpdateTurnCounter()
     {
         if (_turnCounterLabel == null) return;
-        // Show empty during pre-encounter state (turn 0), otherwise show formatted count.
         _turnCounterLabel.text = _turnNumber > 0
             ? string.Format(_turnCounterFormat, _turnNumber)
             : "";

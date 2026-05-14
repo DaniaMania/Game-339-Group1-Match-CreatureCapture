@@ -32,6 +32,7 @@ public class Character : ScriptableObject, ICharacter
     public ObservableValue<int> Block { get; } = new ObservableValue<int>();
     public ObservableValue<int> WeaknessDuration { get; } = new ObservableValue<int>();
     public ObservableValue<int> VulnerabilityDuration { get; } = new ObservableValue<int>();
+    public ObservableValue<int> Thorns { get; } = new ObservableValue<int>();
 
     public bool HasDied { get; private set; } = false;
 
@@ -52,11 +53,31 @@ public class Character : ScriptableObject, ICharacter
         Defense.Value = _defaultDefense;
         HealAmount.Value = _defaultHealAmount;
         Speed.Value = _defaultSpeed;
+        ResetCombatState();
+        RecomputeStats();
+
+        // *** DO NOT REMOVE — keeps body-part HP modifiers visible at spawn. ***
+        // RecomputeStats raises MaxHP to include loadout modifiers, but doesn't touch HP.
+        // Without this line a character authored at _defaultHP == _defaultMaxHP would start
+        // at the BASE MaxHP value (e.g. 100/150) instead of the loadout-adjusted full HP (150/150).
+        // The conditional preserves intent for characters intentionally authored below full HP.
+        if (_defaultHP >= _defaultMaxHP)
+        {
+            HP.Value = MaxHP.Value;
+        }
+    }
+
+    /// <summary>
+    /// Zero per-encounter status values (Block, Weakness, Vulnerability, Thorns) without
+    /// touching HP/MaxHP/Attack or other persistent stats. Called between encounters so
+    /// statuses don't bleed from one fight into the next.
+    /// </summary>
+    public void ResetCombatState()
+    {
         Block.Value = 0;
         WeaknessDuration.Value = 0;
         VulnerabilityDuration.Value = 0;
-        RecomputeStats();
-        HP.Value = MaxHP.Value;
+        Thorns.Value = 0;
     }
 
     public void RecomputeStats()
@@ -69,7 +90,6 @@ public class Character : ScriptableObject, ICharacter
     /// <summary>
     /// Apply finalized damage to HP. Vulnerability and Block are already accounted for upstream
     /// by AttackService.DealDamage. This just decrements HP and fires events.
-    /// Both events can fire on a fatal hit so visual hit-feedback still plays on the killing blow.
     /// </summary>
     public void ApplyDamage(int damageAmount)
     {
