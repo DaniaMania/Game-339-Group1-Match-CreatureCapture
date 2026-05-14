@@ -18,6 +18,6 @@ public class BattleView : EncounterController
     {
         _playerView.Deinitialize();
         _enemyView.Deinitialize();
-        _turnIndicatorView.Deinitialize(); 
+        _turnIndicatorView.Deinitialize();  
     }
 }

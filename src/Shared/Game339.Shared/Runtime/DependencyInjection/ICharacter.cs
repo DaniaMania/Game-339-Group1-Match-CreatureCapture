@@ -14,6 +14,7 @@ namespace Game339.Shared.DependencyInjection
         public ObservableValue<int> Block { get; }
         public ObservableValue<int> WeaknessDuration { get; }
         public ObservableValue<int> VulnerabilityDuration { get; }
+        public ObservableValue<int> Thorns { get; }
 
         public bool HasDied { get; }
 

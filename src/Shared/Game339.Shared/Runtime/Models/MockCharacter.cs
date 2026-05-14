@@ -15,6 +15,7 @@ namespace Game339.Shared.Models
         public ObservableValue<int> Block { get; } = new ObservableValue<int>();
         public ObservableValue<int> WeaknessDuration { get; } = new ObservableValue<int>();
         public ObservableValue<int> VulnerabilityDuration { get; } = new ObservableValue<int>();
+        public ObservableValue<int> Thorns { get; } = new ObservableValue<int>();
         
         public bool HasDied { get; private set; }
         

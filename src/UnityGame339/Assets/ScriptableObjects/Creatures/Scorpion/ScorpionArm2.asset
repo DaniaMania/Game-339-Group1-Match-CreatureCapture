@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 183737f2efaca07498080745ade4cd6f, type: 3}
-  m_Name: DefaultArm2
+  m_Name: ScorpionArm2
   m_EditorClassIdentifier: Assembly-CSharp::BodyPart
-  partName: Lion Arm
+  partName: Scorpion Arm
   partType: 0
-  icon: {fileID: 4334783836991956000, guid: 1975bf5042e59a783bbb6495cf345665, type: 3}
+  icon: {fileID: 8074211559580310802, guid: 6f5ec054c9997344ab89118552f4a66c, type: 3}
   maxHPModifier: 0
   attackModifier: 0
-  abilityName: Poke
-  abilityDescription: A Piercing Poke
-  abilityType: 0
-  abilityValue: 3
-  abilityHits: 5
+  abilityName: Guard
+  abilityDescription: You Guard With Claw
+  abilityType: 2
+  abilityValue: 50
+  abilityHits: 1
   cooldownTurns: 2
   passiveDescription: 
   passiveType: 0

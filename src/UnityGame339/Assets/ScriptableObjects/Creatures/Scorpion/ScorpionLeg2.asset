@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 183737f2efaca07498080745ade4cd6f, type: 3}
-  m_Name: DefaultLeg2
+  m_Name: ScorpionLeg2
   m_EditorClassIdentifier: Assembly-CSharp::BodyPart
-  partName: Unnamed Part
+  partName: Scorpion Legs
   partType: 1
-  icon: {fileID: 0}
+  icon: {fileID: -1354628032345649555, guid: 6fe946acecc8ea2439af2ab1a35d5601, type: 3}
   maxHPModifier: 0
   attackModifier: 0
   abilityName: 
