@@ -26,7 +26,7 @@ public class PlayerController : BattleController
         for (int i = 0; i < _armCooldowns.Length; i++) _armCooldowns[i] = 0;
         _playerControllerView.RefreshArmCooldowns(_armCooldowns);
 
-        _passivePhaseController.OnPassivePhaseComplete += OnPassivePhaseComplete;
+        _passivePhaseController.OnPassivePhaseComplete += OnPassivePhaseComplete; 
         _turnEngine.PlayerTurnEnd += OnPlayerTurnEnd;
     }
 
