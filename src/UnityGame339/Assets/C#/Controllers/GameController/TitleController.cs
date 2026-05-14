@@ -1,3 +1,5 @@
+using Game.Runtime;
+using Game339.Shared.Diagnostics;
 using UnityEngine;
 
 public class TitleController : MonoBehaviour
@@ -11,7 +13,7 @@ public class TitleController : MonoBehaviour
 
     public void OnPlayClicked()
     {
-        Debug.Log("[Title] OnPlayClicked");
+        ServiceResolver.Resolve<IGameLog>().Info("[Title] Play Button Clicked");
         _titlePanel.SetActive(false);
         EncounterManager.Instance.BeginNewEncounter();
     }
