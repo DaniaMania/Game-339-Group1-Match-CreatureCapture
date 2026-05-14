@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Game.Runtime;
 using Game339.Shared;
+using Game339.Shared.Diagnostics;
 using UnityEngine;
 
 public class EncounterManager : ObserverMonoBehaviour
@@ -20,7 +21,8 @@ public class EncounterManager : ObserverMonoBehaviour
    }
    #endregion
    
-   private TurnEngine _turnEngine = ServiceResolver.Resolve<TurnEngine>();
+   private readonly TurnEngine _turnEngine = ServiceResolver.Resolve<TurnEngine>();
+   private readonly IGameLog _logger = ServiceResolver.Resolve<IGameLog>();
 
    protected override void Subscribe()
    {
@@ -41,6 +43,8 @@ public class EncounterManager : ObserverMonoBehaviour
    // ===== Encounter Logic =====
    public void BeginNewEncounter()
    {
+      _logger.Info("[Encounter] New Encounter Started");
+      
       //todo: pick a new enemy from the list in a good way (maybe by difficultly or by predetermined order)
       Character randomEnemy = CharacterDatabase.GetRandomCharacter();
       CharacterDatabase.Instance.ResetCharacterValue(ref randomEnemy);
@@ -71,6 +75,8 @@ public class EncounterManager : ObserverMonoBehaviour
 
    private void NextTurn()
    {
+      _logger.Info("[Encounter] Next Turn");
+      
       //todo: this is where we will resolve all the animations for the damage and stats effects 
       StartCoroutine(Delay());
       return;
@@ -83,7 +89,7 @@ public class EncounterManager : ObserverMonoBehaviour
 
    private void EndEncounter(bool _)
    {
-     
+      _logger.Info("[Encounter] Ended");
    }
 
    //===== Other =====

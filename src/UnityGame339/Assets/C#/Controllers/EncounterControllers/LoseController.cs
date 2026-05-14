@@ -32,6 +32,8 @@ public class LoseController : GameController
     {
         if (isPlayerWin) return;
         IsLoseShowing.Value = true;
+        
+        _logger.Info("[Lost] Game Lost");
     }
     
 

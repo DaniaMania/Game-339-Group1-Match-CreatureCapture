@@ -18,16 +18,13 @@ namespace Game.Runtime
             UnityGameLogger logger = new UnityGameLogger();
             container.RegisterSingletonInstance<IGameLog>(logger);
             
-            DamageService damageService = new DamageService();
-            container.RegisterSingletonInstance<IDamageService>(damageService);
-            
             AttackService attackService = new AttackService();
             container.RegisterSingletonInstance(attackService);
 
             TurnEngine turnEngine = new TurnEngine();
             container.RegisterSingletonInstance(turnEngine);
             
-            var audioService = new AudioService();
+            AudioService audioService = new AudioService();
             container.RegisterSingletonInstance(audioService);
 
             return container;

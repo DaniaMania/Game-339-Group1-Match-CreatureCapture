@@ -35,6 +35,8 @@ public class UpgradeController : GameController
     // called by UpgradeView button
     public void UpgradeAttack()
     {
+        _logger.Info("[Upgrade] Attack Upgraded");
+        
         if (!IsUpgradeAvailable.Value) return;
         Player.Attack.Value += _attackUpgradeAmount;
         StartNextEncounter();
@@ -43,6 +45,8 @@ public class UpgradeController : GameController
     // called by UpgradeView button
     public void HealToFull()
     {
+        _logger.Info("[Upgrade] Healed to Full");
+        
         if (!IsUpgradeAvailable.Value) return;
         Player.HealToFull();
         StartNextEncounter();
@@ -51,6 +55,8 @@ public class UpgradeController : GameController
     // called by UpgradeView button
     public void UpgradeHealPotency()
     {
+        _logger.Info("[Upgrade] Heal Potency Increase");
+        
         if (!IsUpgradeAvailable.Value) return;
         Player.HealAmount.Value += _healPotencyUpgradeAmount;
         StartNextEncounter();
