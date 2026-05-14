@@ -15,7 +15,7 @@ MonoBehaviour:
   partName: Scorpion Arm
   partType: 0
   icon: {fileID: 8074211559580310802, guid: 6f5ec054c9997344ab89118552f4a66c, type: 3}
-  maxHPModifier: 10
+  maxHPModifier: -20
   attackModifier: 0
   abilityName: Claw Barrage
   abilityDescription: Pinch Your Enemy Over and Over

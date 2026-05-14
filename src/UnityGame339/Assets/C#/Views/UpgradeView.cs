@@ -4,6 +4,9 @@ using UnityEngine.UI;
 /// <summary>
 /// Parent panel for the upgrade screen. Holds references to all sub-components, routes their
 /// events into UpgradeController, and exposes display methods the controller calls.
+///
+/// The stats display (HP, Attack) lives on the persistent SidePanelView, not inside the upgrade
+/// panel itself. This view delegates stats-preview calls to the side panel.
 /// </summary>
 public class UpgradeView : TypedView<UpgradeController>, IGamePanel
 {
@@ -14,7 +17,10 @@ public class UpgradeView : TypedView<UpgradeController>, IGamePanel
     [SerializeField] private OfferedLimbUI _offeredLegUI;
     [SerializeField] private CreaturePreviewUI _creaturePreviewUI;
     [SerializeField] private UpgradeConfirmationUI _confirmationUI;
-    [SerializeField] private StatsPreviewView _statsPreviewView;
+
+    [Header("External")]
+    [Tooltip("Persistent side panel — receives stats-preview updates and gets its player preview hidden while this view is visible.")]
+    [SerializeField] private SidePanelView _sidePanelView;
 
     private UpgradeController _controller;
 
@@ -29,6 +35,10 @@ public class UpgradeView : TypedView<UpgradeController>, IGamePanel
         _panel.alpha = value ? 1f : 0f;
         _panel.interactable = value;
         _panel.blocksRaycasts = value;
+
+        // The upgrade screen has its own creature preview in the middle, so hide the side panel's
+        // duplicate copy while we're showing.
+        if (_sidePanelView != null) _sidePanelView.SetPlayerPreviewVisible(!value);
     }
 
     protected override void InitializeView(UpgradeController[] args)
@@ -49,8 +59,6 @@ public class UpgradeView : TypedView<UpgradeController>, IGamePanel
         _confirmationUI.OnBack += HandleBack;
 
         _controller.IsUpgradeAvailable.ChangeEvent += SetVisible;
-
-        _statsPreviewView.Initialize(_controller.GetPlayer());
     }
 
     protected override void DeinitializeView()
@@ -70,7 +78,6 @@ public class UpgradeView : TypedView<UpgradeController>, IGamePanel
 
         _controller.IsUpgradeAvailable.ChangeEvent -= SetVisible;
 
-        _statsPreviewView.Deinitialize();
         _controller = null;
     }
 
@@ -109,12 +116,12 @@ public class UpgradeView : TypedView<UpgradeController>, IGamePanel
 
     public void UpdateStatsPreview(int previewMaxHP, int previewAttack)
     {
-        _statsPreviewView.SetPreview(previewMaxHP, previewAttack);
+        if (_sidePanelView != null) _sidePanelView.SetStatsPreview(previewMaxHP, previewAttack);
     }
 
     public void ClearStatsPreview()
     {
-        _statsPreviewView.ClearPreview();
+        if (_sidePanelView != null) _sidePanelView.ClearStatsPreview();
     }
 
     //===== Sub-component event forwarders =====

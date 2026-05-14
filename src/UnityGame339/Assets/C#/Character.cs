@@ -53,11 +53,31 @@ public class Character : ScriptableObject, ICharacter
         Defense.Value = _defaultDefense;
         HealAmount.Value = _defaultHealAmount;
         Speed.Value = _defaultSpeed;
+        ResetCombatState();
+        RecomputeStats();
+
+        // *** DO NOT REMOVE — keeps body-part HP modifiers visible at spawn. ***
+        // RecomputeStats raises MaxHP to include loadout modifiers, but doesn't touch HP.
+        // Without this line a character authored at _defaultHP == _defaultMaxHP would start
+        // at the BASE MaxHP value (e.g. 100/150) instead of the loadout-adjusted full HP (150/150).
+        // The conditional preserves intent for characters intentionally authored below full HP.
+        if (_defaultHP >= _defaultMaxHP)
+        {
+            HP.Value = MaxHP.Value;
+        }
+    }
+
+    /// <summary>
+    /// Zero per-encounter status values (Block, Weakness, Vulnerability, Thorns) without
+    /// touching HP/MaxHP/Attack or other persistent stats. Called between encounters so
+    /// statuses don't bleed from one fight into the next.
+    /// </summary>
+    public void ResetCombatState()
+    {
         Block.Value = 0;
         WeaknessDuration.Value = 0;
         VulnerabilityDuration.Value = 0;
         Thorns.Value = 0;
-        RecomputeStats();
     }
 
     public void RecomputeStats()
