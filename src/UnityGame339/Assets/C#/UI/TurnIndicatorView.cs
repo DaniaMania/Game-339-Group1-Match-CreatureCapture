@@ -1,3 +1,4 @@
+using Game.Runtime;
 using Game339.Shared.DependencyInjection;
 using TMPro;
 using UnityEngine;
@@ -8,8 +9,10 @@ using UnityEngine;
 ///  2. A status label that cycles through "Passive Phase" → "Player's Turn" → "Enemy's Turn".
 ///  3. A glow effect on whichever CharacterView is currently active (or off during passive phase).
 /// </summary>
-public class TurnIndicatorView : Controller
+public class TurnIndicatorView : TypedView<CharacterView>
 {
+    private readonly TurnEngine _turnEngine = ServiceResolver.Resolve<TurnEngine>();
+    
     [Header("Labels")]
     [SerializeField] private TextMeshProUGUI _turnLabel;
     [SerializeField] private TextMeshProUGUI _turnCounterLabel;
@@ -29,9 +32,12 @@ public class TurnIndicatorView : Controller
     [SerializeField] private string _turnCounterFormat = "Turn {0}";
 
     private int _turnNumber;
-
-    protected override void Subscribe()
+    
+    protected override void InitializeView(CharacterView[] arg)
     {
+        _playerView = arg[0];
+        _enemyView = arg[1];
+        
         _turnEngine.EncounterSetup += OnEncounterSetup;
         _turnEngine.PlayerTurnStart += OnPlayerTurnStart;
         _turnEngine.PlayerTurnEnd += OnPlayerTurnEnd;
@@ -46,8 +52,10 @@ public class TurnIndicatorView : Controller
         ClearAll();
     }
 
-    protected override void Unsubscribe()
+    protected override void DeinitializeView()
     {
+        _playerView = _enemyView = null;
+        
         _turnEngine.EncounterSetup -= OnEncounterSetup;
         _turnEngine.PlayerTurnStart -= OnPlayerTurnStart;
         _turnEngine.PlayerTurnEnd -= OnPlayerTurnEnd;

@@ -7,13 +7,13 @@ public class EnemyController : BattleController
 {
     protected override void EncounterBegin()
     {
-        _turnEngine.PlayerTurnEnd += Attack;
+        _turnEngine.EnemyTurnStart += Attack;
         _turnEngine.EnemyTurnEnd += OnEnemyTurnEnd;
     }
 
     protected override void EncounterEnd(bool isPlayerWin)
     {
-        _turnEngine.PlayerTurnEnd -= Attack;
+        _turnEngine.EnemyTurnStart -= Attack;
         _turnEngine.EnemyTurnEnd -= OnEnemyTurnEnd;
     }
 
@@ -25,6 +25,7 @@ public class EnemyController : BattleController
     //===== Abilities =====   
     public void Attack()
     {
+        _logger.Info("[Enemy] Used Default Attack");
         StartCoroutine(AttackDelay());
         return;
 

@@ -60,12 +60,16 @@ public class PlayerController : BattleController
 
     public void DefaultAttack()
     {
+        _logger.Info("[Player] Used Default Attack");
+        
         _attackService.Attack(Player, Enemy);
         End();
     }
 
     public void UseArm(int armIndex)
     {
+        _logger.Info($"[Player] Used Arm {armIndex}");
+        
         BodyPart[] arms = Player.Loadout.arms;
         if (armIndex < 0 || armIndex >= arms.Length) return;
         BodyPart arm = arms[armIndex];
