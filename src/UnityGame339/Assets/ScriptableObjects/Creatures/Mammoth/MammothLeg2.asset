@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 183737f2efaca07498080745ade4cd6f, type: 3}
+  m_Name: MammothLeg2
+  m_EditorClassIdentifier: Assembly-CSharp::BodyPart
+  partName: Mammoth Leg
+  partType: 1
+  icon: {fileID: 181540633643042218, guid: ed9fe0047f59f5b4a83736118669007a, type: 3}
+  maxHPModifier: 10
+  attackModifier: 0
+  abilityName: Ability
+  abilityDescription: Deals damage.
+  abilityType: 0
+  abilityValue: 0
+  abilityHits: 1
+  cooldownTurns: 0
+  passiveDescription: Protect yourself with thick fur
+  passiveType: 1
+  passiveValue: 10
